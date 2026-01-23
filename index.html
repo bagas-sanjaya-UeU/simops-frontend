@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Sistem Izin Kerja K3</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            background-color: #f4f6f9;
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 0.9rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin-top: 20px;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .page {
+            display: none;
+        }
+
+        .active {
+            display: block;
+            animation: fadeIn 0.4s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .risk-low {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .risk-med {
+            background: #fff3cd;
+            color: #664d03;
+        }
+
+        .risk-high {
+            background: #fd7e14;
+            color: white;
+        }
+
+        .risk-ext {
+            background: #dc3545;
+            color: white;
+        }
+
+        .menu-card {
+            cursor: pointer;
+            transition: 0.2s;
+            border: 1px solid #dee2e6;
+        }
+
+        .menu-card:hover {
+            transform: translateY(-5px);
+            border-color: #0d6efd;
+            box-shadow: 0 5px 15px rgba(13, 110, 253, 0.15);
+        }
+
+        .simops-conflict {
+            border-left: 5px solid #dc3545;
+            background-color: #fff5f5;
+        }
+
+        .activity-group {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+
+        .activity-header {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            font-weight: bold;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Loading Overlay */
+        #loadingOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            z-index: 9999;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="loadingOverlay">
+        <div class="spinner-border text-primary" role="status"></div>
+        <div class="mt-2 fw-bold text-secondary">Memproses...</div>
+    </div>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-3 shadow-sm px-3 rounded-bottom">
+        <a class="navbar-brand fw-bold" href="#"><i class="bi bi-cone-striped"></i> Izin Kerja K3</a>
+        <div class="ms-auto d-flex align-items-center gap-3">
+            <span class="text-white small">Halo, <span id="navUser" class="fw-bold">Guest</span> (<span
+                    id="navRole"></span>)</span>
+            <button class="btn btn-sm btn-outline-light" onclick="logout()">Keluar</button>
+        </div>
+    </nav>
+
+    <div class="container">
+
+        <div id="page-login" class="page active">
+            <div class="row justify-content-center mt-5">
+                <div class="col-md-5">
+                    <div class="card shadow border-0 p-4">
+                        <h3 class="text-center mb-4 text-primary fw-bold">Login Sistem</h3>
+                        <div class="mb-3"><label>Username</label><input type="text" id="u" class="form-control"></div>
+                        <div class="mb-3"><label>Password</label><input type="password" id="p" class="form-control">
+                        </div>
+                        <button class="btn btn-primary w-100 py-2 fw-bold" onclick="login()">MASUK</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="page-dashboard" class="page">
+            <h4 class="mb-4">Menu Utama</h4>
+            <div class="row g-3" id="menuContainer"></div>
+        </div>
+
+        <div id="page-input" class="page">
+            <h4><i class="bi bi-pencil-square"></i> Input Data Pekerjaan</h4>
+            <hr>
+            <form id="formJob">
+                <div class="mb-2"><label class="fw-bold">Nama Perusahaan (PT)</label><input type="text" name="namaPT"
+                        class="form-control" required></div>
+                <div class="row">
+                    <div class="col-md-6 mb-2">
+                        <label>Kompartemen</label>
+                        <select name="kompartemen" id="inKomp" class="form-select" onchange="setUnit()">
+                            <option value="">- Pilih -</option>
+                            <option value="Produksi 3A">Produksi 3A</option>
+                            <option value="Produksi 3B">Produksi 3B</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label>Unit</label><select name="unit" id="inUnit" class="form-select" required>
+                            <option value="">- Pilih Kompartemen Dulu -</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-2">
+                        <label>Jenis Pekerjaan</label>
+                        <select name="jenisPekerjaan" class="form-select" required>
+                            <option>Gabungan</option>
+                            <option>Panas</option>
+                            <option>Ketinggian</option>
+                            <option>Penggalian</option>
+                            <option>Lifting</option>
+                            <option>Listrik</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-2"><label>Area Spesifik</label><input type="text" name="area"
+                            class="form-control" required></div>
+                </div>
+                <div class="mb-2"><label>Nama Pekerjaan</label><input type="text" name="namaPekerjaan"
+                        class="form-control" required></div>
+                <div class="mb-2"><label>Penanggung Jawab (PJ)</label><input type="text" name="pjNama"
+                        class="form-control" required></div>
+                <div class="row">
+                    <div class="col-md-4"><label>Tanggal</label><input type="date" name="tanggalKerja"
+                            class="form-control" required></div>
+                    <div class="col-md-4"><label>Jam Mulai</label><input type="time" name="jamMulai"
+                            class="form-control" required></div>
+                    <div class="col-md-4"><label>Jam Selesai</label><input type="time" name="jamSelesai"
+                            class="form-control" required></div>
+                </div>
+                <br>
+                <div class="d-flex justify-content-between">
+                    <button type="button" class="btn btn-secondary" onclick="nav('page-dashboard')">Batal</button>
+                    <button type="button" class="btn btn-primary" onclick="submitJob()">Lanjut: Upload Dokumen <i
+                            class="bi bi-arrow-right"></i></button>
+                </div>
+            </form>
+        </div>
+
+        <div id="page-upload" class="page">
+            <h4><i class="bi bi-cloud-upload"></i> Upload Dokumen</h4>
+            <div class="alert alert-info py-2">ID Pekerjaan: <strong id="lblJobId">...</strong></div>
+
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="chkLanjutan" onchange="toggleDocs()">
+                <label class="form-check-label fw-bold" for="chkLanjutan">Pekerjaan Lanjutan (Hanya Wajib WP)</label>
+            </div>
+
+            <ul class="list-group mb-4">
+                <li class="list-group-item d-flex justify-content-between align-items-center bg-light">
+                    <div><strong>1. Work Permit (WP)</strong> <span class="badge bg-danger">Wajib</span></div>
+                    <div><input type="file" id="f_WP" hidden
+                            onchange="uploadFile('Work Permit','f_WP','btn_WP')"><button id="btn_WP"
+                            class="btn btn-sm btn-outline-danger"
+                            onclick="document.getElementById('f_WP').click()">Upload WP</button></div>
+                </li>
+                <div id="optDocs">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>2. JSA</div>
+                        <div><input type="file" id="f_JSA" hidden onchange="uploadFile('JSA','f_JSA','btn_JSA')"><button
+                                id="btn_JSA" class="btn btn-sm btn-outline-primary"
+                                onclick="document.getElementById('f_JSA').click()">Upload</button></div>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>3. PJA</div>
+                        <div><input type="file" id="f_PJA" hidden onchange="uploadFile('PJA','f_PJA','btn_PJA')"><button
+                                id="btn_PJA" class="btn btn-sm btn-outline-primary"
+                                onclick="document.getElementById('f_PJA').click()">Upload</button></div>
+                    </li>
+                </div>
+            </ul>
+            <button id="btnToRisk" class="btn btn-success w-100" onclick="nav('page-risk-input')">Lanjut: Penilaian
+                Risiko <i class="bi bi-arrow-right"></i></button>
+            <button id="btnBackToAdmin" class="btn btn-secondary w-100 mt-2" style="display:none"
+                onclick="nav('page-list-admin')">Kembali ke List</button>
+        </div>
+
+        <div id="page-risk-input" class="page">
+            <h4><i class="bi bi-shield-exclamation"></i> Penilaian Risiko (Risk Assessment)</h4>
+            <div class="alert alert-warning small">
+                Gunakan skala 1-5 untuk Kemungkinan & Dampak. Sistem menghitung Tingkat Risiko otomatis.
+            </div>
+
+            <div id="riskContainer"></div>
+
+            <button class="btn btn-outline-primary w-100 mb-4 border-dashed" onclick="addActivityBlock()">
+                <i class="bi bi-plus-circle"></i> Tambah Aktivitas Baru
+            </button>
+
+            <button class="btn btn-warning w-100 fw-bold py-2" onclick="submitRisk()">SIMPAN PENILAIAN SELESAI</button>
+            <button class="btn btn-light w-100 mt-2" onclick="nav('page-dashboard')">Batal</button>
+        </div>
+
+        <div id="page-rekap" class="page">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4><i class="bi bi-list-check"></i> Monitoring & SIMOPS</h4>
+                <button class="btn btn-secondary btn-sm" onclick="nav('page-dashboard')">Kembali</button>
+            </div>
+            <div id="simopsContainer"></div>
+            <div id="rekapContainer" class="row g-3">Loading...</div>
+        </div>
+
+        <div id="page-list-admin" class="page">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4><i class="bi bi-folder2-open"></i> Data Pekerjaan</h4>
+                <button class="btn btn-secondary btn-sm" onclick="nav('page-dashboard')">Kembali</button>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered bg-white">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Tanggal</th>
+                            <th>PT / Pekerjaan</th>
+                            <th>Status Doc</th>
+                            <th>Status Risk</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminListBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="page-user" class="page">
+            <h4>Tambah User Baru</h4>
+            <form id="formUser">
+                <div class="mb-2"><label>Username</label><input type="text" name="regUser" class="form-control"></div>
+                <div class="mb-2"><label>Password</label><input type="text" name="regPass" class="form-control"></div>
+                <div class="mb-2"><label>Role</label>
+                    <select name="regRole" class="form-select">
+                        <option value="Staff">Pekerja (Staff)</option>
+                        <option value="Admin">Safety/Admin</option>
+                        <option value="Inspector">Inspector</option>
+                    </select>
+                </div>
+                <button type="button" class="btn btn-primary mt-2" onclick="submitUser()">Buat Akun</button>
+                <button type="button" class="btn btn-light mt-2" onclick="nav('page-dashboard')">Kembali</button>
+            </form>
+        </div>
+
+        <div class="modal fade" id="detailModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Detail Pekerjaan</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="modalContent"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // ==========================================================
+        // KONFIGURASI BACKEND (GANTI DENGAN URL RENDER ANDA)
+        // ==========================================================
+        const API_BASE_URL = "https://simops-backend.onrender.com";
+        // ==========================================================
+
+        let currUser = { name: '', role: '' };
+        let currJobId = '';
+        let allJobsCache = [];
+
+        const units = {
+            "Produksi 3A": ["Asam Sulfat", "Asam Fosfat", "ZAII", "Purifikasi", "ET"],
+            "Produksi 3B": ["Asam Sulfat", "Asam Fosfat", "Purifikasi", "ALF3", "UBB"]
+        };
+
+        const optProb = [{ v: 1, t: "1 - Sangat Jarang" }, { v: 2, t: "2 - Jarang" }, { v: 3, t: "3 - Mungkin" }, { v: 4, t: "4 - Mungkin Sekali" }, { v: 5, t: "5 - Hampir Pasti" }];
+        const optImp = [{ v: 1, t: "1 - Tidak Signifikan" }, { v: 2, t: "2 - Kecil" }, { v: 3, t: "3 - Sedang" }, { v: 4, t: "4 - Besar" }, { v: 5, t: "5 - Bencana" }];
+
+        // --- UTILS ---
+        const showLoading = () => document.getElementById('loadingOverlay').style.display = 'flex';
+        const hideLoading = () => document.getElementById('loadingOverlay').style.display = 'none';
+
+        function nav(page) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(page).classList.add('active');
+            if (page === 'page-rekap') loadRekap();
+            if (page === 'page-list-admin') loadAdminList();
+        }
+
+        // --- AUTHENTICATION ---
+        async function login() {
+            const u = document.getElementById('u').value;
+            const p = document.getElementById('p').value;
+
+            showLoading();
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: u, password: p })
+                });
+                const data = await res.json();
+
+                if (res.ok && data.status === 'Sukses') {
+                    currUser = { name: u, role: data.role };
+                    document.getElementById('navUser').innerText = u;
+                    document.getElementById('navRole').innerText = data.role;
+                    setupMenu();
+                    nav('page-dashboard');
+                } else {
+                    alert('Login Gagal: ' + (data.message || 'Error'));
+                }
+            } catch (err) {
+                alert('Gagal koneksi ke server: ' + err.message);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function logout() {
+            currUser = {};
+            document.getElementById('u').value = '';
+            document.getElementById('p').value = '';
+            nav('page-login');
+        }
+
+        function setupMenu() {
+            const c = document.getElementById('menuContainer');
+            let html = '';
+            if (currUser.role === 'Staff') {
+                html += `<div class="col-md-4"><div class="card menu-card p-4 text-center" onclick="nav('page-input')"><i class="bi bi-pencil-square fs-1 text-primary"></i><h5 class="mt-2">Input Pekerjaan</h5></div></div>`;
+            }
+            if (currUser.role === 'Admin' || currUser.role === 'Inspector') {
+                html += `<div class="col-md-4"><div class="card menu-card p-4 text-center" onclick="nav('page-list-admin')"><i class="bi bi-folder2-open fs-1 text-primary"></i><h5 class="mt-2">Data Pekerjaan & Dokumen</h5></div></div>`;
+            }
+            html += `<div class="col-md-4"><div class="card menu-card p-4 text-center" onclick="nav('page-rekap')"><i class="bi bi-table fs-1 text-success"></i><h5 class="mt-2">Rekap & SIMOPS</h5></div></div>`;
+            if (currUser.role === 'Admin') {
+                html += `<div class="col-md-4"><div class="card menu-card p-4 text-center" onclick="nav('page-user')"><i class="bi bi-person-plus fs-1 text-warning"></i><h5 class="mt-2">Tambah User</h5></div></div>`;
+            }
+            c.innerHTML = html;
+        }
+
+        function setUnit() {
+            const k = document.getElementById('inKomp').value;
+            const u = document.getElementById('inUnit');
+            u.innerHTML = '<option value="">- Pilih -</option>';
+            if (units[k]) units[k].forEach(x => { u.innerHTML += `<option>${x}</option>`; });
+        }
+
+        // --- SUBMIT JOB ---
+        async function submitJob() {
+            const form = document.getElementById('formJob');
+            if (!form.reportValidity()) return;
+
+            // Convert Form Data to JSON
+            const formData = new FormData(form);
+            const jsonData = Object.fromEntries(formData.entries());
+
+            showLoading();
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/jobs`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(jsonData)
+                });
+                const data = await res.json();
+
+                if (res.ok) {
+                    currJobId = data.id;
+                    document.getElementById('lblJobId').innerText = data.id;
+                    form.reset();
+                    document.getElementById('btnToRisk').style.display = 'block';
+                    document.getElementById('btnBackToAdmin').style.display = 'none';
+                    nav('page-upload');
+                } else {
+                    alert('Gagal simpan data: ' + data.error);
+                }
+            } catch (err) {
+                alert('Error: ' + err.message);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function toggleDocs() {
+            const chk = document.getElementById('chkLanjutan');
+            document.getElementById('optDocs').style.display = chk.checked ? 'none' : 'block';
+        }
+
+        // --- UPLOAD FILE ---
+        async function uploadFile(jenis, inpId, btnId) {
+            const f = document.getElementById(inpId).files[0];
+            if (!f) return;
+
+            const btn = document.getElementById(btnId);
+            btn.innerText = 'Uploading...'; btn.disabled = true;
+
+            const formData = new FormData();
+            formData.append('file', f);
+            formData.append('idPekerjaan', currJobId);
+            formData.append('jenisDokumen', jenis);
+
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/upload`, {
+                    method: 'POST',
+                    body: formData // Jangan set Content-Type header manual saat pakai FormData!
+                });
+                const data = await res.json();
+
+                if (res.ok) {
+                    alert('Upload Berhasil!');
+                    btn.className = 'btn btn-sm btn-success'; btn.innerText = 'OK';
+                } else {
+                    alert('Gagal: ' + data.error);
+                    btn.innerText = 'Coba Lagi'; btn.disabled = false;
+                }
+            } catch (err) {
+                alert('Error: ' + err.message);
+                btn.innerText = 'Error'; btn.disabled = false;
+            }
+        }
+
+        // --- RISK ASSESMENT UI ---
+        function addActivityBlock() {
+            const div = document.createElement('div');
+            div.className = 'activity-group bg-white';
+            div.innerHTML = `
+            <div class="activity-header">
+                <input type="text" class="form-control form-control-sm me-2 act-name" placeholder="Nama Aktivitas" style="max-width:300px">
+                <button class="btn btn-sm btn-danger" onclick="this.parentElement.parentElement.remove()"><i class="bi bi-trash"></i></button>
+            </div>
+            <div class="p-2">
+                <table class="table table-sm table-bordered mb-2">
+                    <thead class="table-light"><tr><th>Bahaya</th><th width="120">Kemungkinan</th><th width="120">Dampak</th><th width="80">Risiko</th><th width="30"></th></tr></thead>
+                    <tbody class="hazard-body"></tbody>
+                </table>
+                <button class="btn btn-sm btn-outline-success" onclick="addHazardRow(this)"><i class="bi bi-plus"></i> Tambah Bahaya</button>
+            </div>`;
+            document.getElementById('riskContainer').appendChild(div);
+            addHazardRow(div.querySelector('.btn-outline-success'));
+        }
+
+        function addHazardRow(btn) {
+            const tbody = btn.previousElementSibling.querySelector('tbody');
+            const tr = document.createElement('tr');
+            let optP = optProb.map(o => `<option value="${o.v} - ${o.t}">${o.t}</option>`).join(''); // Kirim format value angka
+            let optI = optImp.map(o => `<option value="${o.v} - ${o.t}">${o.t}</option>`).join('');
+
+            tr.innerHTML = `
+            <td><input type="text" class="form-control form-control-sm haz"></td>
+            <td><select class="form-select form-select-sm l" onchange="calcRR(this)">${optP}</select></td>
+            <td><select class="form-select form-select-sm c" onchange="calcRR(this)">${optI}</select></td>
+            <td><input type="text" class="form-control form-control-sm rr fw-bold text-center" readonly value="1"></td>
+            <td><i class="bi bi-x text-danger" style="cursor:pointer" onclick="this.closest('tr').remove()"></i></td>`;
+            tbody.appendChild(tr);
+        }
+
+        function calcRR(el) {
+            const row = el.closest('tr');
+            const l = parseInt(row.querySelector('.l').value); // Ambil angka depan
+            const c = parseInt(row.querySelector('.c').value);
+            row.querySelector('.rr').value = l * c;
+        }
+
+        async function submitRisk() {
+            let dataRisiko = [];
+            document.querySelectorAll('.activity-group').forEach(group => {
+                let actName = group.querySelector('.act-name').value;
+                group.querySelectorAll('tbody tr').forEach(tr => {
+                    dataRisiko.push({
+                        aktivitas: actName,
+                        bahaya: tr.querySelector('.haz').value,
+                        l: tr.querySelector('.l').value,
+                        c: tr.querySelector('.c').value,
+                        rr: tr.querySelector('.rr').value
+                    });
+                });
+            });
+
+            if (dataRisiko.length === 0) return alert("Isi minimal satu aktivitas!");
+
+            showLoading();
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/risks`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ idPekerjaan: currJobId, dataRisiko })
+                });
+                if (res.ok) {
+                    alert('Data Berhasil Disimpan!');
+                    document.getElementById('riskContainer').innerHTML = '';
+                    nav('page-dashboard');
+                } else {
+                    alert('Gagal simpan risiko');
+                }
+            } catch (err) { alert(err.message); }
+            finally { hideLoading(); }
+        }
+
+        // --- ADMIN FEATURES ---
+        async function submitUser() {
+            const form = document.getElementById('formUser');
+            const formData = new FormData(form);
+            const jsonData = Object.fromEntries(formData.entries());
+
+            showLoading();
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/auth/register`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(jsonData)
+                });
+                const data = await res.json();
+                alert(data.message);
+                if (res.ok) form.reset();
+            } catch (e) { alert(e.message); }
+            finally { hideLoading(); }
+        }
+
+        async function loadAdminList() {
+            document.getElementById('adminListBody').innerHTML = '<tr><td colspan="5" class="text-center">Loading...</td></tr>';
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/rekap`); // Pakai endpoint rekap karena datanya sama
+                const jobs = await res.json();
+                renderAdminList(jobs);
+            } catch (e) {
+                document.getElementById('adminListBody').innerHTML = '<tr><td colspan="5" class="text-danger">Gagal load data</td></tr>';
+            }
+        }
+
+        function renderAdminList(jobs) {
+            allJobsCache = jobs || [];
+            const tbody = document.getElementById('adminListBody');
+            tbody.innerHTML = '';
+
+            if (jobs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Belum ada data.</td></tr>';
+                return;
+            }
+
+            jobs.forEach(j => {
+                let btnAction = `<button class="btn btn-sm btn-info text-white" onclick="showDetail('${j.id}')">Detail & Docs</button>`;
+                tbody.innerHTML += `<tr>
+                <td>${j.tanggal}<br><small>${j.jamMulai}-${j.jamSelesai}</small></td>
+                <td><strong>${j.namaPT}</strong><br>${j.pekerjaan}</td>
+                <td>${j.statusDoc}</td>
+                <td>${j.statusRisk}</td>
+                <td>${btnAction}</td>
+             </tr>`;
+            });
+        }
+
+        function showDetail(id) {
+            const j = allJobsCache.find(x => x.id === id);
+            if (!j) return;
+            currJobId = id;
+
+            let docsHtml = '<ul class="list-group mb-3">';
+            if (j.docs.length > 0) {
+                j.docs.forEach(d => {
+                    docsHtml += `<li class="list-group-item d-flex justify-content-between"><span>${d.jenis}</span><a href="${d.url}" target="_blank" class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i> Lihat</a></li>`;
+                });
+            } else { docsHtml += '<li class="list-group-item text-muted">Belum ada dokumen</li>'; }
+            docsHtml += '</ul>';
+
+            docsHtml += `<button class="btn btn-sm btn-secondary mb-3" onclick="document.getElementById('lblJobId').innerText='${id}'; document.getElementById('btnToRisk').style.display='none'; document.getElementById('btnBackToAdmin').style.display='block'; nav('page-upload'); bootstrap.Modal.getInstance(document.getElementById('detailModal')).hide(); ">+ Upload Dokumen Tambahan</button>`;
+
+            let approveBtn = '';
+            if (currUser.role === 'Inspector' && j.statusDoc !== 'APPROVED') {
+                approveBtn = `<button class="btn btn-success w-100 mb-3" onclick="doApprove('${id}')"><i class="bi bi-check-circle"></i> APPROVE DOKUMEN</button>`;
+            }
+
+            let riskHtml = '<table class="table table-sm table-bordered"><thead class="table-light"><tr><th>Akt</th><th>Bahaya</th><th>L</th><th>C</th><th>RR</th></tr></thead><tbody>';
+            if (j.riskData && j.riskData.details) {
+                j.riskData.details.forEach(r => {
+                    riskHtml += `<tr><td>${r.act}</td><td>${r.hazard}</td><td>${r.l}</td><td>${r.c}</td><td class="fw-bold">${r.rr}</td></tr>`;
+                });
+            }
+            riskHtml += '</tbody></table>';
+
+            const content = `<h6>Informasi Pekerjaan</h6><p><strong>${j.namaPT}</strong> - ${j.pekerjaan} (${j.area})</p><hr><h6>Dokumen</h6>${docsHtml}${approveBtn}<hr><h6>Penilaian Risiko</h6>${riskHtml}`;
+            document.getElementById('modalContent').innerHTML = content;
+            new bootstrap.Modal(document.getElementById('detailModal')).show();
+        }
+
+        async function doApprove(id) {
+            if (!confirm('Setujui dokumen pekerjaan ini?')) return;
+            showLoading();
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/jobs/${id}/approve`, { method: 'PUT' });
+                const data = await res.json();
+                alert(data.message);
+                loadAdminList();
+                bootstrap.Modal.getInstance(document.getElementById('detailModal')).hide();
+            } catch (e) { alert(e.message); }
+            finally { hideLoading(); }
+        }
+
+        // --- REKAP & SIMOPS (Load Data) ---
+        async function loadRekap() {
+            document.getElementById('rekapContainer').innerHTML = '<div class="text-center p-3"><div class="spinner-border text-primary"></div><p>Sedang memuat data...</p></div>';
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/rekap`);
+                const jobs = await res.json();
+                renderRekap(jobs);
+            } catch (err) {
+                document.getElementById('rekapContainer').innerHTML = `<div class="alert alert-danger">Gagal mengambil data dari server: ${err.message}</div>`;
+            }
+        }
+
+        // Logic SIMOPS Conflict (Sama seperti sebelumnya)
+        function isOverlap(t1S, t1E, t2S, t2E) {
+            if (!t1S || !t1E || !t2S || !t2E) return false;
+            try {
+                const toM = t => parseInt(t.split(':')[0]) * 60 + parseInt(t.split(':')[1]);
+                let s1 = toM(t1S), e1 = toM(t1E);
+                let s2 = toM(t2S), e2 = toM(t2E);
+                if (e1 < s1) e1 += 24 * 60;
+                if (e2 < s2) e2 += 24 * 60;
+                return (s1 < e2 && e1 > s2);
+            } catch (e) { return false; }
+        }
+
+        function renderRekap(jobs) {
+            if (!jobs || !Array.isArray(jobs) || jobs.length === 0) {
+                document.getElementById('rekapContainer').innerHTML = '<div class="alert alert-info">Belum ada data pekerjaan yang tercatat.</div>';
+                document.getElementById('simopsContainer').innerHTML = '';
+                return;
+            }
+
+            let areas = {};
+            jobs.forEach(j => {
+                let areaName = j.area || "Area Umum";
+                if (!areas[areaName]) areas[areaName] = [];
+                areas[areaName].push(j);
+            });
+
+            let html = '';
+            let simopsHtml = '';
+
+            for (const [area, areaJobs] of Object.entries(areas)) {
+                let conflict = false;
+                let conflictJobs = [];
+
+                for (let i = 0; i < areaJobs.length; i++) {
+                    for (let j = i + 1; j < areaJobs.length; j++) {
+                        if (isOverlap(areaJobs[i].jamMulai, areaJobs[i].jamSelesai, areaJobs[j].jamMulai, areaJobs[j].jamSelesai)) {
+                            conflict = true;
+                            if (!conflictJobs.includes(areaJobs[i])) conflictJobs.push(areaJobs[i]);
+                            if (!conflictJobs.includes(areaJobs[j])) conflictJobs.push(areaJobs[j]);
+                        }
+                    }
+                }
+
+                html += `<div class="col-12 mt-3"><h5 class="border-bottom pb-2 text-primary">${area}</h5></div>`;
+
+                areaJobs.forEach(job => {
+                    let isConflict = conflictJobs.includes(job);
+                    let borderClass = isConflict ? 'border-danger border-2' : 'border-light shadow-sm';
+
+                    html += `<div class="col-md-4 mb-3"><div class="card h-100 ${borderClass}"><div class="card-body">
+                  <h6 class="fw-bold">${job.jenis} - ${job.pekerjaan}</h6>
+                  <div class="mb-1 text-primary fw-bold small"><i class="bi bi-building"></i> ${job.namaPT}</div>
+                  <small class="badge bg-secondary"><i class="bi bi-clock"></i> ${job.jamMulai} - ${job.jamSelesai}</small>
+                  <div class="mt-2 small border-top pt-2">
+                    <span class="d-block"><strong>Dokumen:</strong> ${job.statusDoc}</span>
+                    <span class="d-block"><strong>Risiko:</strong> L=${job.riskData.maxL}, C=${job.riskData.maxC}</span>
+                  </div></div></div></div>`;
+                });
+
+                if (conflict) {
+                    let maxL = 0, maxC = 0;
+                    conflictJobs.forEach(j => {
+                        if (j.riskData.maxL > maxL) maxL = j.riskData.maxL;
+                        if (j.riskData.maxC > maxC) maxC = j.riskData.maxC;
+                    });
+                    let combinedRR = maxL * maxC;
+
+                    simopsHtml += `<div class="alert alert-danger border-danger border-3 mb-3">
+               <h5 class="fw-bold"><i class="bi bi-exclamation-triangle-fill"></i> SIMOPS Terdeteksi: ${area}</h5>
+               <p class="mb-2">Konflik jadwal antara:</p>
+               <ul class="mb-2 small">${conflictJobs.map(j => `<li><strong>${j.namaPT}</strong>: ${j.pekerjaan} (${j.jamMulai}-${j.jamSelesai})</li>`).join('')}</ul>
+               <div class="d-flex align-items-center gap-2 bg-white p-2 rounded border">
+                  <small class="fw-bold text-muted">RISIKO GABUNGAN:</small><span class="badge bg-light text-dark border">Max L: ${maxL}</span><span class="text-muted">x</span><span class="badge bg-light text-dark border">Max C: ${maxC}</span><span class="text-muted">=</span><span class="badge bg-danger fs-6">RR: ${combinedRR}</span>
+               </div></div>`;
+                }
+            }
+            document.getElementById('rekapContainer').innerHTML = html;
+            document.getElementById('simopsContainer').innerHTML = simopsHtml || '<div class="alert alert-success border-success"><i class="bi bi-check-circle-fill"></i> Tidak ada konflik SIMOPS terdeteksi.</div>';
+        }
+    </script>
+</body>
+
+</html>
