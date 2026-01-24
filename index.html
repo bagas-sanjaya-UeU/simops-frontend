@@ -2,17 +2,277 @@
 <html>
 
 <head>
-    <title>Sistem Izin Kerja K3</title>
+    <title>Sistem Izin Kerja K3 - SafetyFirst Academy</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary-dark: #1e3a5f;
+            --primary-blue: #2c5282;
+            --accent-orange: #e85a24;
+            --light-bg: #f8fafc;
+            --text-dark: #1a202c;
+        }
+
         body {
             background-color: #f4f6f9;
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
             font-size: 0.9rem;
         }
 
+        /* ================= LANDING PAGE STYLES ================= */
+        .landing-page {
+            background-color: var(--light-bg);
+        }
+
+        /* Top Navigation */
+        .landing-navbar {
+            background-color: var(--primary-dark);
+            padding: 12px 0;
+        }
+
+        .landing-navbar .navbar-brand {
+            color: white;
+            font-weight: 700;
+            font-size: 1.3rem;
+        }
+
+        .landing-navbar .navbar-brand i {
+            color: #fbbf24;
+        }
+
+        .landing-navbar .nav-link {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 0.9rem;
+            padding: 8px 16px;
+        }
+
+        .landing-navbar .nav-link:hover {
+            color: white;
+        }
+
+        .btn-daftar {
+            background-color: var(--accent-orange);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+
+        .btn-daftar:hover {
+            background-color: #d14d1a;
+            color: white;
+        }
+
+        /* Secondary Nav */
+        .secondary-nav {
+            background-color: white;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 10px 0;
+        }
+
+        .secondary-nav a {
+            color: var(--text-dark);
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-right: 30px;
+        }
+
+        .secondary-nav a:hover {
+            color: var(--primary-blue);
+        }
+
+        .secondary-nav a.active-link {
+            color: var(--primary-blue);
+            font-weight: 600;
+            border-bottom: 2px solid var(--primary-blue);
+            padding-bottom: 8px;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            background: linear-gradient(135deg, #f8fafc 0%, #e6f0fa 100%);
+            padding: 60px 0 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 50%;
+            height: 100%;
+            background: radial-gradient(ellipse at center right, rgba(186, 230, 253, 0.4) 0%, transparent 70%);
+        }
+
+        .hero-title {
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+
+        .hero-subtitle {
+            color: #64748b;
+            font-size: 1rem;
+            line-height: 1.7;
+            margin-bottom: 30px;
+        }
+
+        .btn-mulai {
+            background-color: var(--primary-dark);
+            color: white;
+            padding: 12px 28px;
+            border-radius: 8px;
+            font-weight: 500;
+            border: none;
+            margin-right: 12px;
+        }
+
+        .btn-mulai:hover {
+            background-color: #152a45;
+            color: white;
+        }
+
+        .btn-konsultasi {
+            background-color: var(--accent-orange);
+            color: white;
+            padding: 12px 28px;
+            border-radius: 8px;
+            font-weight: 500;
+            border: none;
+        }
+
+        .btn-konsultasi:hover {
+            background-color: #d14d1a;
+            color: white;
+        }
+
+        .hero-image {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-image img {
+            max-height: 320px;
+            object-fit: contain;
+        }
+
+        /* Features Section */
+        .features-section {
+            padding: 50px 0;
+            background-color: white;
+        }
+
+        .feature-card {
+            text-align: center;
+            padding: 30px 20px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .feature-icon img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        .feature-icon i {
+            font-size: 2.5rem;
+            color: var(--accent-orange);
+        }
+
+        .feature-title {
+            color: var(--accent-orange);
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        .feature-desc {
+            color: #64748b;
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        /* Quote Section */
+        .quote-section {
+            padding: 40px 0;
+            background-color: var(--light-bg);
+        }
+
+        .quote-box {
+            background-color: white;
+            border-radius: 12px;
+            padding: 30px 40px;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border-left: 5px solid var(--primary-dark);
+        }
+
+        .quote-mark {
+            color: var(--accent-orange);
+            font-size: 3rem;
+            font-family: Georgia, serif;
+            line-height: 1;
+        }
+
+        .quote-text {
+            color: var(--primary-dark);
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-align: center;
+            font-style: italic;
+        }
+
+        /* Footer */
+        .landing-footer {
+            background-color: var(--primary-dark);
+            color: white;
+            padding: 25px 0;
+        }
+
+        .landing-footer a {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.2rem;
+            margin-right: 15px;
+        }
+
+        .landing-footer a:hover {
+            color: white;
+        }
+
+        .footer-info {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.8rem;
+        }
+
+        .footer-copyright {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.8rem;
+        }
+
+        /* ================= ORIGINAL APP STYLES ================= */
         .container {
             max-width: 1200px;
             margin-top: 20px;
@@ -109,6 +369,28 @@
             justify-content: center;
             align-items: center;
         }
+
+        /* Hide app navbar on landing page */
+        .app-navbar {
+            display: none;
+        }
+
+        .app-container {
+            display: none;
+        }
+
+        /* Show app when logged in */
+        body.logged-in .landing-page {
+            display: none !important;
+        }
+
+        body.logged-in .app-navbar {
+            display: flex !important;
+        }
+
+        body.logged-in .app-container {
+            display: block !important;
+        }
     </style>
 </head>
 
@@ -119,7 +401,170 @@
         <div class="mt-2 fw-bold text-secondary">Memproses...</div>
     </div>
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-3 shadow-sm px-3 rounded-bottom">
+    <!-- ================= LANDING PAGE ================= -->
+    <div class="landing-page" id="landingPage">
+        <!-- Top Navigation -->
+        <nav class="landing-navbar">
+            <div class="container-fluid px-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <a class="navbar-brand" href="#">
+                        <i class="bi bi-person-badge-fill me-2"></i>SafetyFirst Academy
+                    </a>
+                    <div class="d-flex align-items-center gap-2">
+                        <a href="#" class="nav-link d-none d-md-inline">Alat Pelindung Diri (APD)</a>
+                        <a href="#" class="nav-link d-none d-md-inline">Sertifikasi</a>
+                        <a href="#" class="nav-link d-none d-md-inline">Kontak</a>
+                        <button class="btn btn-daftar" onclick="showLoginModal()">Daftar Sekarang</button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Secondary Navigation -->
+        <div class="secondary-nav">
+            <div class="container-fluid px-4">
+                <a href="#" class="active-link">Home</a>
+                <a href="#">Pelatihan</a>
+                <a href="#">Alat Pelindung Diri (APD)</a>
+            </div>
+        </div>
+
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="container-fluid px-4">
+                <div class="row align-items-center">
+                    <div class="col-lg-6">
+                        <h1 class="hero-title">Keamanan Kerja Dimulai dari Diri Sendiri</h1>
+                        <p class="hero-subtitle">
+                            Edukasi K3 dengan cara yang lebih menyenangkan dan mudah dipahami untuk seluruh tim Anda
+                        </p>
+                        <div class="d-flex flex-wrap gap-2">
+                            <button class="btn btn-mulai" onclick="showLoginModal()">Mulai Belajar</button>
+                            <button class="btn btn-konsultasi">Konsultasi Gratis</button>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 text-center hero-image mt-4 mt-lg-0">
+                        <div class="d-flex justify-content-center gap-3">
+                            <!-- Placeholder for worker illustrations - replace with actual images -->
+                            <img src="https://i.imgur.com/placeholder1.png" alt="Safety Worker Male"
+                                style="max-height: 280px; object-fit: contain;"
+                                onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22280%22><rect fill=%22%23f0f0f0%22 width=%22200%22 height=%22280%22/><text x=%2250%%22 y=%2250%%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 fill=%22%23999%22 font-size=%2214%22>Worker Image</text></svg>'">
+                            <img src="https://i.imgur.com/placeholder2.png" alt="Safety Worker Female"
+                                style="max-height: 280px; object-fit: contain;"
+                                onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22280%22><rect fill=%22%23f0f0f0%22 width=%22200%22 height=%22280%22/><text x=%2250%%22 y=%2250%%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 fill=%22%23999%22 font-size=%2214%22>Worker Image</text></svg>'">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features-section">
+            <div class="container-fluid px-4">
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="feature-card h-100">
+                            <div class="feature-icon">
+                                <i class="bi bi-shield-check"></i>
+                            </div>
+                            <h5 class="feature-title">Proteksi Maksimal</h5>
+                            <p class="feature-desc">Panduan lengkap APD dan prosedur standar keselamatan internasional
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="feature-card h-100">
+                            <div class="feature-icon">
+                                <i class="bi bi-play-circle"></i>
+                            </div>
+                            <h5 class="feature-title">Edukasi Interaktif</h5>
+                            <p class="feature-desc">Materi safety yang tidak membosankan dengan ilustrasi menarik</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="feature-card h-100">
+                            <div class="feature-icon">
+                                <i class="bi bi-award"></i>
+                            </div>
+                            <h5 class="feature-title">Sertifikasi Resmi</h5>
+                            <p class="feature-desc">Pastikan tim Anda tersertifikasi dan patuh aturan keselamatan</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quote Section -->
+        <section class="quote-section">
+            <div class="container-fluid px-4">
+                <div class="quote-box">
+                    <div class="d-flex">
+                        <span class="quote-mark">"</span>
+                    </div>
+                    <p class="quote-text">
+                        "Ingat: Keselamatan adalah tanggung jawab bersama. Gunakan selalu masker respirator dan helm
+                        pelindung di area kerja berbahaya"
+                    </p>
+                    <div class="d-flex justify-content-end">
+                        <span class="quote-mark">"</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="landing-footer">
+            <div class="container-fluid px-4">
+                <div class="row align-items-center">
+                    <div class="col-md-3">
+                        <a href="#"><i class="bi bi-facebook"></i></a>
+                        <a href="#"><i class="bi bi-twitter"></i></a>
+                        <a href="#"><i class="bi bi-instagram"></i></a>
+                        <a href="#"><i class="bi bi-linkedin"></i></a>
+                    </div>
+                    <div class="col-md-5 text-center">
+                        <p class="footer-info mb-0">
+                            Alamat Kantor: Jl. Keselamatan No. 123, Jakarta.<br>
+                            Telepon: (021) 123-456
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <p class="footer-copyright mb-0">Copyright © 2026 SafetyFirst Academy</p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title text-primary fw-bold">
+                        <i class="bi bi-person-badge-fill me-2"></i>Login Sistem K3
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body pt-3">
+                    <div class="mb-3">
+                        <label class="form-label">Username</label>
+                        <input type="text" id="u" class="form-control" placeholder="Masukkan username">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input type="password" id="p" class="form-control" placeholder="Masukkan password">
+                    </div>
+                    <button class="btn btn-primary w-100 py-2 fw-bold" onclick="login()">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>MASUK
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= APP SECTION ================= -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-3 shadow-sm px-3 rounded-bottom app-navbar">
         <a class="navbar-brand fw-bold" href="#"><i class="bi bi-cone-striped"></i> Izin Kerja K3</a>
         <div class="ms-auto d-flex align-items-center gap-3">
             <span class="text-white small">Halo, <span id="navUser" class="fw-bold">Guest</span> (<span
@@ -128,21 +573,7 @@
         </div>
     </nav>
 
-    <div class="container">
-
-        <div id="page-login" class="page active">
-            <div class="row justify-content-center mt-5">
-                <div class="col-md-5">
-                    <div class="card shadow border-0 p-4">
-                        <h3 class="text-center mb-4 text-primary fw-bold">Login Sistem</h3>
-                        <div class="mb-3"><label>Username</label><input type="text" id="u" class="form-control"></div>
-                        <div class="mb-3"><label>Password</label><input type="password" id="p" class="form-control">
-                        </div>
-                        <button class="btn btn-primary w-100 py-2 fw-bold" onclick="login()">MASUK</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="container app-container">
 
         <div id="page-dashboard" class="page">
             <h4 class="mb-4">Menu Utama</h4>
@@ -337,6 +768,7 @@
         let currUser = { name: '', role: '' };
         let currJobId = '';
         let allJobsCache = [];
+        let loginModal;
 
         const units = {
             "Produksi 3A": ["Asam Sulfat", "Asam Fosfat", "ZAII", "Purifikasi", "ET"],
@@ -349,6 +781,15 @@
         // --- UTILS ---
         const showLoading = () => document.getElementById('loadingOverlay').style.display = 'flex';
         const hideLoading = () => document.getElementById('loadingOverlay').style.display = 'none';
+
+        // Initialize modal on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+        });
+
+        function showLoginModal() {
+            loginModal.show();
+        }
 
         function nav(page) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -375,6 +816,13 @@
                     currUser = { name: u, role: data.role };
                     document.getElementById('navUser').innerText = u;
                     document.getElementById('navRole').innerText = data.role;
+
+                    // Hide login modal if open
+                    if (loginModal) loginModal.hide();
+
+                    // Switch to app view
+                    document.body.classList.add('logged-in');
+
                     setupMenu();
                     nav('page-dashboard');
                 } else {
@@ -391,7 +839,12 @@
             currUser = {};
             document.getElementById('u').value = '';
             document.getElementById('p').value = '';
-            nav('page-login');
+
+            // Switch back to landing page
+            document.body.classList.remove('logged-in');
+
+            // Hide all app pages
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         }
 
         function setupMenu() {
@@ -422,7 +875,6 @@
             const form = document.getElementById('formJob');
             if (!form.reportValidity()) return;
 
-            // Convert Form Data to JSON
             const formData = new FormData(form);
             const jsonData = Object.fromEntries(formData.entries());
 
@@ -473,7 +925,7 @@
             try {
                 const res = await fetch(`${API_BASE_URL}/api/upload`, {
                     method: 'POST',
-                    body: formData // Jangan set Content-Type header manual saat pakai FormData!
+                    body: formData
                 });
                 const data = await res.json();
 
@@ -513,7 +965,7 @@
         function addHazardRow(btn) {
             const tbody = btn.previousElementSibling.querySelector('tbody');
             const tr = document.createElement('tr');
-            let optP = optProb.map(o => `<option value="${o.v} - ${o.t}">${o.t}</option>`).join(''); // Kirim format value angka
+            let optP = optProb.map(o => `<option value="${o.v} - ${o.t}">${o.t}</option>`).join('');
             let optI = optImp.map(o => `<option value="${o.v} - ${o.t}">${o.t}</option>`).join('');
 
             tr.innerHTML = `
@@ -527,7 +979,7 @@
 
         function calcRR(el) {
             const row = el.closest('tr');
-            const l = parseInt(row.querySelector('.l').value); // Ambil angka depan
+            const l = parseInt(row.querySelector('.l').value);
             const c = parseInt(row.querySelector('.c').value);
             row.querySelector('.rr').value = l * c;
         }
@@ -588,7 +1040,7 @@
         async function loadAdminList() {
             document.getElementById('adminListBody').innerHTML = '<tr><td colspan="5" class="text-center">Loading...</td></tr>';
             try {
-                const res = await fetch(`${API_BASE_URL}/api/rekap`); // Pakai endpoint rekap karena datanya sama
+                const res = await fetch(`${API_BASE_URL}/api/rekap`);
                 const jobs = await res.json();
                 renderAdminList(jobs);
             } catch (e) {
@@ -676,7 +1128,6 @@
             }
         }
 
-        // Logic SIMOPS Conflict (Sama seperti sebelumnya)
         function isOverlap(t1S, t1E, t2S, t2E) {
             if (!t1S || !t1E || !t2S || !t2E) return false;
             try {
