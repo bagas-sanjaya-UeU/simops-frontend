@@ -642,7 +642,10 @@
         <a class="navbar-brand fw-bold" href="#"><i class="bi bi-cone-striped"></i> Izin Kerja K3</a>
         <div class="ms-auto d-flex align-items-center gap-3">
             <span class="text-white small">Halo, <span id="navUser" class="fw-bold">Guest</span> (<span
-                    id="navRole"></span>)<span id="notifBadge" class="badge bg-danger ms-2" style="display:none; cursor:pointer;" onclick="showNotificationModal()" onkeydown="if(event.key==='Enter'||event.key===' '){showNotificationModal();event.preventDefault();}" role="button" aria-label="Notifikasi pekerjaan belum lengkap" tabindex="0"></span></span>
+                    id="navRole"></span>)<span id="notifBadge" class="badge bg-danger ms-2"
+                    style="display:none; cursor:pointer;" onclick="showNotificationModal()"
+                    onkeydown="if(event.key==='Enter'||event.key===' '){showNotificationModal();event.preventDefault();}"
+                    role="button" aria-label="Notifikasi pekerjaan belum lengkap" tabindex="0"></span></span>
             <button class="btn btn-sm btn-outline-light" onclick="logout()">Keluar</button>
         </div>
     </nav>
@@ -918,7 +921,7 @@
                         hideLoading();
                         return;
                     }
-                    
+
                     currUser = { name: u, role: data.role, area: data.area || '' };
                     document.getElementById('navUser').innerText = u;
                     document.getElementById('navRole').innerText = data.role;
@@ -931,10 +934,10 @@
 
                     setupMenu();
                     nav('page-dashboard');
-                    
+
                     // Check for incomplete jobs
                     await checkIncompleteJobs();
-                    
+
                     // Fetch notifications for Staff
                     if (data.role === 'Staff') {
                         await fetchNotifications();
@@ -1360,7 +1363,7 @@
         function showNotificationModal() {
             const list = document.getElementById('notificationList');
             list.innerHTML = '';
-            
+
             if (notificationsData.length === 0) {
                 list.innerHTML = '<li class="list-group-item text-muted">Tidak ada notifikasi</li>';
             } else {
@@ -1374,7 +1377,7 @@
                     `;
                 });
             }
-            
+
             new bootstrap.Modal(document.getElementById('notificationModal')).show();
         }
 
@@ -1399,7 +1402,7 @@
             document.getElementById('incompleteCount').innerText = incompleteJobsData.length;
             const list = document.getElementById('incompleteList');
             list.innerHTML = '';
-            
+
             incompleteJobsData.forEach(job => {
                 const status = job.statusDoc === 'Lengkap' ? 'Belum isi risiko' : 'Belum upload dokumen';
                 list.innerHTML += `
@@ -1409,7 +1412,7 @@
                     </li>
                 `;
             });
-            
+
             new bootstrap.Modal(document.getElementById('incompleteJobModal')).show();
         }
 
@@ -1417,10 +1420,10 @@
             if (incompleteJobsData.length > 0) {
                 const job = incompleteJobsData[0]; // Resume first incomplete job
                 currJobId = job._id || job.id;
-                
+
                 // Hide modal
                 bootstrap.Modal.getInstance(document.getElementById('incompleteJobModal')).hide();
-                
+
                 // Navigate based on status
                 if (job.statusDoc === 'Lengkap') {
                     // Documents uploaded, need to fill risk assessment
@@ -1459,15 +1462,15 @@
                 const res = await fetch(`${API_BASE_URL}/api/auth/register`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        regUser: username, 
-                        regPass: password, 
+                    body: JSON.stringify({
+                        regUser: username,
+                        regPass: password,
                         regRole: 'Staff',
-                        area: area 
+                        area: area
                     })
                 });
                 const data = await res.json();
-                
+
                 if (res.ok) {
                     alert('Registrasi berhasil! Menunggu persetujuan admin.');
                     bootstrap.Modal.getInstance(document.getElementById('registerModal')).hide();
@@ -1487,7 +1490,9 @@
             showLoading();
             try {
                 const res = await fetch(`${API_BASE_URL}/api/users/pending`);
-                const users = await res.json();
+                const data = await res.json();
+                // Handle berbagai format response dari backend
+                const users = Array.isArray(data) ? data : (data.users || data.data || []);
                 renderPendingUsers(users);
             } catch (err) {
                 alert('Gagal load data: ' + err.message);
@@ -1499,12 +1504,12 @@
         function renderPendingUsers(users) {
             const tbody = document.getElementById('approvalListBody');
             tbody.innerHTML = '';
-            
-            if (!users || users.length === 0) {
+
+            if (!Array.isArray(users) || users.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Tidak ada registrasi pending</td></tr>';
                 return;
             }
-            
+
             users.forEach(user => {
                 const tanggal = user.tanggalRegistrasi || user.createdAt || '-';
                 tbody.innerHTML += `
@@ -1527,7 +1532,7 @@
 
         async function approveUser(username) {
             if (!confirm(`Approve registrasi user ${username}?`)) return;
-            
+
             showLoading();
             try {
                 const res = await fetch(`${API_BASE_URL}/api/users/${username}/approve`, {
@@ -1545,7 +1550,7 @@
 
         async function rejectUser(username) {
             if (!confirm(`Reject registrasi user ${username}?`)) return;
-            
+
             showLoading();
             try {
                 const res = await fetch(`${API_BASE_URL}/api/users/${username}/reject`, {
