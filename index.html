@@ -642,7 +642,7 @@
         <a class="navbar-brand fw-bold" href="#"><i class="bi bi-cone-striped"></i> Izin Kerja K3</a>
         <div class="ms-auto d-flex align-items-center gap-3">
             <span class="text-white small">Halo, <span id="navUser" class="fw-bold">Guest</span> (<span
-                    id="navRole"></span>)<span id="notifBadge" class="badge bg-danger ms-2" style="display:none; cursor:pointer;" onclick="showNotificationModal()" role="button" aria-label="Notifikasi pekerjaan belum lengkap" tabindex="0"></span></span>
+                    id="navRole"></span>)<span id="notifBadge" class="badge bg-danger ms-2" style="display:none; cursor:pointer;" onclick="showNotificationModal()" onkeydown="if(event.key==='Enter'||event.key===' '){showNotificationModal();event.preventDefault();}" role="button" aria-label="Notifikasi pekerjaan belum lengkap" tabindex="0"></span></span>
             <button class="btn btn-sm btn-outline-light" onclick="logout()">Keluar</button>
         </div>
     </nav>
@@ -1444,7 +1444,7 @@
             const passwordConfirm = document.getElementById('regPasswordConfirm').value;
             const area = document.getElementById('regArea').value;
 
-            if (!username.trim() || !password.trim() || !area.trim()) {
+            if (!username.trim() || !password.trim() || !passwordConfirm.trim() || !area.trim()) {
                 alert('Semua field harus diisi!');
                 return;
             }
