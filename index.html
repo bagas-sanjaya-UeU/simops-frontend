@@ -878,6 +878,38 @@
         const showLoading = () => document.getElementById('loadingOverlay').style.display = 'flex';
         const hideLoading = () => document.getElementById('loadingOverlay').style.display = 'none';
 
+        // --- FUNGSI TAMBAHAN UNTUK RESET UI ---
+        function resetUploadUI() {
+            // 1. Reset Tombol Work Permit (WP)
+            const btnWP = document.getElementById('btn_WP');
+            btnWP.innerText = 'Upload WP';
+            btnWP.disabled = false;
+            btnWP.className = 'btn btn-sm btn-outline-danger'; // Kelas awal
+            document.getElementById('f_WP').value = ''; // Kosongkan input file
+
+            // 2. Reset Tombol JSA
+            const btnJSA = document.getElementById('btn_JSA');
+            btnJSA.innerText = 'Upload';
+            btnJSA.disabled = false;
+            btnJSA.className = 'btn btn-sm btn-outline-primary'; // Kelas awal
+            document.getElementById('f_JSA').value = '';
+
+            // 3. Reset Tombol PJA
+            const btnPJA = document.getElementById('btn_PJA');
+            btnPJA.innerText = 'Upload';
+            btnPJA.disabled = false;
+            btnPJA.className = 'btn btn-sm btn-outline-primary'; // Kelas awal
+            document.getElementById('f_PJA').value = '';
+
+            // 4. Reset Checkbox Pekerjaan Lanjutan
+            const chk = document.getElementById('chkLanjutan');
+            chk.checked = false;
+            toggleDocs(); // Panggil fungsi ini agar elemen JSA/PJA muncul kembali (default)
+
+            // 5. (Opsional) Reset Container Risiko juga agar bersih jika user back
+            document.getElementById('riskContainer').innerHTML = '';
+        }
+
         // Initialize modal on page load
         document.addEventListener('DOMContentLoaded', function () {
             loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
@@ -1009,6 +1041,7 @@
                     currJobId = data.id;
                     document.getElementById('lblJobId').innerText = data.id;
                     form.reset();
+                    resetUploadUI();
                     document.getElementById('btnToRisk').style.display = 'block';
                     document.getElementById('btnBackToAdmin').style.display = 'none';
                     nav('page-upload');
