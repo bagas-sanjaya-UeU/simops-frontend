@@ -1162,7 +1162,8 @@
         async function loadAdminList() {
             document.getElementById('adminListBody').innerHTML = '<tr><td colspan="5" class="text-center">Loading...</td></tr>';
             try {
-                const res = await fetch(`${API_BASE_URL}/api/rekap`);
+                // Kirim role ke backend
+                const res = await fetch(`${API_BASE_URL}/api/rekap?role=${encodeURIComponent(currUser.role)}`);
                 const jobs = await res.json();
                 renderAdminList(jobs);
             } catch (e) {
