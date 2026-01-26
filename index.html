@@ -581,14 +581,13 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Area Kerja</label>
-                            <select id="regArea" class="form-select" required>
-                                <option value="">- Pilih Area -</option>
-                                <option value="gudang">Gudang</option>
-                                <option value="pabrik">Pabrik</option>
-                                <option value="kantor">Kantor</option>
-                                <option value="lapangan">Lapangan</option>
-                            </select>
+                            <input type="text" id="regArea" class="form-control" required>
                         </div>
+                        <div class="mb-3">
+                            <label class="form-label">Unit</label>
+                            <input type="text" id="regUnit" class="form-control" required>
+                        </div>
+
                         <button type="button" class="btn btn-primary w-100 py-2 fw-bold" onclick="registerUser()">
                             <i class="bi bi-check-circle me-2"></i>DAFTAR
                         </button>
@@ -1480,8 +1479,9 @@
             const password = document.getElementById('regPassword').value;
             const passwordConfirm = document.getElementById('regPasswordConfirm').value;
             const area = document.getElementById('regArea').value;
+            const unit = document.getElementById('regUnit').value;
 
-            if (!username.trim() || !password.trim() || !passwordConfirm.trim() || !area.trim()) {
+            if (!username.trim() || !password.trim() || !passwordConfirm.trim() || !area.trim() || !unit.trim()) {
                 alert('Semua field harus diisi!');
                 return;
             }
@@ -1500,7 +1500,8 @@
                         regUser: username,
                         regPass: password,
                         regRole: 'Staff',
-                        area: area
+                        area: area,
+                        unit: unit
                     })
                 });
                 const data = await res.json();
