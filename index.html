@@ -391,6 +391,363 @@
         body.logged-in .app-container {
             display: block !important;
         }
+
+        /* ================= ANIMATIONS ================= */
+
+        /* Keyframes */
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-80px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-60px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(60px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -200% 0;
+            }
+
+            100% {
+                background-position: 200% 0;
+            }
+        }
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            70% {
+                transform: scale(0.9);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes rotateIn {
+            from {
+                opacity: 0;
+                transform: rotate(-10deg) scale(0.9);
+            }
+
+            to {
+                opacity: 1;
+                transform: rotate(0) scale(1);
+            }
+        }
+
+        /* Navbar Animation */
+        .landing-navbar {
+            animation: slideDown 0.6s ease-out;
+        }
+
+        .landing-navbar .navbar-brand {
+            animation: slideInLeft 0.8s ease-out 0.2s both;
+        }
+
+        .landing-navbar .navbar-brand i {
+            display: inline-block;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        /* Hero Section Animations */
+        .hero-title {
+            animation: slideInLeft 0.8s ease-out 0.3s both;
+        }
+
+        .hero-subtitle {
+            animation: slideInLeft 0.8s ease-out 0.5s both;
+        }
+
+        .hero-section .btn-mulai,
+        .hero-section .btn-konsultasi {
+            animation: slideUp 0.6s ease-out 0.7s both;
+        }
+
+        .hero-section .btn-konsultasi {
+            animation-delay: 0.8s;
+        }
+
+        /* Hero Image - Slide from Top to Bottom */
+        .hero-image img,
+        .hero-img-animated {
+            animation: slideDown 1s ease-out 0.4s both;
+        }
+
+        .hero-image img:hover,
+        .hero-img-animated:hover {
+            animation: slideDown 1s ease-out 0.4s both, float 3s ease-in-out 1.4s infinite;
+        }
+
+        /* Additional hover effect for hero image */
+        .hero-img-animated {
+            transition: transform 0.3s ease, filter 0.3s ease;
+        }
+
+        .hero-img-animated:hover {
+            filter: drop-shadow(0 20px 40px rgba(30, 58, 95, 0.3));
+        }
+
+        /* Feature Cards Animation */
+        .feature-card {
+            animation: slideUp 0.7s ease-out both;
+            opacity: 0;
+        }
+
+        .features-section .col-md-4:nth-child(1) .feature-card {
+            animation-delay: 0.2s;
+        }
+
+        .features-section .col-md-4:nth-child(2) .feature-card {
+            animation-delay: 0.4s;
+        }
+
+        .features-section .col-md-4:nth-child(3) .feature-card {
+            animation-delay: 0.6s;
+        }
+
+        .feature-icon i {
+            transition: all 0.4s ease;
+        }
+
+        .feature-card:hover .feature-icon i {
+            transform: scale(1.2) rotate(5deg);
+            color: var(--primary-dark);
+        }
+
+        /* Quote Section Animation */
+        .quote-box {
+            animation: scaleIn 0.8s ease-out 0.3s both;
+        }
+
+        .quote-mark {
+            display: inline-block;
+            animation: bounceIn 0.8s ease-out 0.5s both;
+        }
+
+        .quote-text {
+            animation: slideUp 0.8s ease-out 0.6s both;
+        }
+
+        /* Footer Animation */
+        .landing-footer {
+            animation: slideUp 0.6s ease-out;
+        }
+
+        .landing-footer a {
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .landing-footer a:hover {
+            transform: translateY(-5px) scale(1.2);
+        }
+
+        /* Button Hover Effects */
+        .btn-mulai,
+        .btn-konsultasi,
+        .btn-daftar {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .btn-mulai::before,
+        .btn-konsultasi::before,
+        .btn-daftar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-mulai:hover::before,
+        .btn-konsultasi:hover::before,
+        .btn-daftar:hover::before {
+            left: 100%;
+        }
+
+        .btn-mulai:hover,
+        .btn-konsultasi:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Menu Card Animations (App Section) */
+        .menu-card {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .menu-card:hover {
+            transform: translateY(-10px) scale(1.02);
+        }
+
+        .menu-card i {
+            transition: all 0.4s ease;
+        }
+
+        .menu-card:hover i {
+            transform: scale(1.2);
+        }
+
+        /* Modal Animation Enhancement */
+        .modal.fade .modal-dialog {
+            transform: scale(0.8) translateY(-50px);
+            transition: all 0.3s ease-out;
+        }
+
+        .modal.show .modal-dialog {
+            transform: scale(1) translateY(0);
+        }
+
+        /* Loading Overlay Animation */
+        #loadingOverlay .spinner-border {
+            animation: spin 1s linear infinite, pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Alert/Badge Animation */
+        .badge.bg-danger {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        /* Form Input Focus Animation */
+        .form-control,
+        .form-select {
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            transform: scale(1.01);
+            box-shadow: 0 0 0 3px rgba(44, 82, 130, 0.2);
+        }
+
+        /* App Navbar Animation */
+        .app-navbar {
+            animation: slideDown 0.5s ease-out;
+        }
+
+        /* Table Row Hover Animation */
+        .table tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        .table tbody tr:hover {
+            transform: scale(1.01);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Activity Group Animation */
+        .activity-group {
+            animation: slideInLeft 0.4s ease-out;
+        }
+
+        /* Scroll Animation Trigger Class */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease-out;
+        }
+
+        .animate-on-scroll.animated {
+            opacity: 1;
+            transform: translateY(0);
+        }
     </style>
 </head>
 
@@ -438,7 +795,7 @@
                     <div class="col-lg-6 text-center hero-image mt-4 mt-lg-0">
                         <div class="d-flex justify-content-center gap-3">
                             <!-- Placeholder for worker illustrations - replace with actual images -->
-                            <img src="rudin1.png" alt="Safety Worker Female"
+                            <img src="rudin1.png" alt="Safety Worker Female" class="hero-img-animated"
                                 style="max-height: 500px; object-fit: contain;"
                                 onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22280%22><rect fill=%22%23f0f0f0%22 width=%22200%22 height=%22280%22/><text x=%2250%%22 y=%2250%%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 fill=%22%23999%22 font-size=%2214%22>Worker Image</text></svg>'">
                         </div>
@@ -489,7 +846,7 @@
         <!-- Quote Section -->
         <section class="quote-section">
             <div class="container-fluid px-4">
-                <div class="quote-box">
+                <div class="quote-box animate-on-scroll">
                     <div class="d-flex">
                         <span class="quote-mark">"</span>
                     </div>
@@ -884,6 +1241,44 @@
         // --- UTILS ---
         const showLoading = () => document.getElementById('loadingOverlay').style.display = 'flex';
         const hideLoading = () => document.getElementById('loadingOverlay').style.display = 'none';
+
+        // --- SCROLL ANIMATION OBSERVER ---
+        function initScrollAnimations() {
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animated');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            // Observe elements with animate-on-scroll class
+            document.querySelectorAll('.animate-on-scroll').forEach(el => {
+                observer.observe(el);
+            });
+
+            // Also animate feature cards when they come into view
+            document.querySelectorAll('.feature-card').forEach((card, index) => {
+                card.style.animationDelay = `${0.2 + (index * 0.2)}s`;
+            });
+        }
+
+        // Initialize scroll animations on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            initScrollAnimations();
+
+            // Re-trigger hero animations when returning to landing page
+            const heroElements = document.querySelectorAll('.hero-title, .hero-subtitle, .hero-image img');
+            heroElements.forEach(el => {
+                el.style.animationPlayState = 'running';
+            });
+        });
 
         // --- FUNGSI TAMBAHAN UNTUK RESET UI ---
         function resetUploadUI() {
