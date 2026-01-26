@@ -1001,6 +1001,101 @@
         </div>
     </div>
 
+    <!-- Ganti Jam Modal -->
+    <div class="modal fade" id="gantiJamModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-warning">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-clock-history"></i> Pengendalian SIMOPS - Ganti Jam
+                        Kerja</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info py-2">
+                        <i class="bi bi-info-circle"></i> Area Konflik: <strong id="gantiJamArea">-</strong>
+                    </div>
+                    <p class="text-muted small">Ubah jam kerja untuk menghindari konflik jadwal yang terjadi secara
+                        bersamaan.</p>
+                    <div id="gantiJamContainer"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-warning fw-bold" onclick="submitGantiJam()">
+                        <i class="bi bi-check-circle"></i> Simpan Perubahan Jam
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mitigasi Lainnya Modal -->
+    <div class="modal fade" id="mitigasiLainnyaModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-people-fill"></i> Pengendalian SIMOPS - Mitigasi
+                        Lainnya</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info py-2">
+                        <i class="bi bi-info-circle"></i> Area Konflik: <strong id="mitigasiArea">-</strong>
+                    </div>
+                    <p class="text-muted small mb-3">Isi data personil yang akan mengawasi operasi simultan di area ini.
+                    </p>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Nama Safety Officer (SO)</label>
+                            <div id="soContainer">
+                                <div class="input-group mb-2">
+                                    <input type="text" class="form-control so-input" placeholder="Nama SO 1">
+                                    <button type="button" class="btn btn-outline-success" onclick="addSOInput()">
+                                        <i class="bi bi-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Nama Safety Inspector (SI)</label>
+                            <div id="siContainer">
+                                <div class="input-group mb-2">
+                                    <input type="text" class="form-control si-input" placeholder="Nama SI 1">
+                                    <button type="button" class="btn btn-outline-success" onclick="addSIInput()">
+                                        <i class="bi bi-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Leader / Koordinator</label>
+                            <input type="text" class="form-control" id="mitigasiLeader" placeholder="Nama Leader">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Jumlah Pekerja Total</label>
+                            <input type="number" class="form-control" id="mitigasiJumlahPekerja"
+                                placeholder="Jumlah pekerja" min="1">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Pekerjaan yang Terlibat:</label>
+                        <ul id="mitigasiJobsList" class="list-group list-group-flush small"></ul>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-info text-white fw-bold" onclick="submitMitigasiLainnya()">
+                        <i class="bi bi-check-circle"></i> Simpan Mitigasi
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- ================= APP SECTION ================= -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-3 shadow-sm px-3 rounded-bottom app-navbar">
         <a class="navbar-brand fw-bold" href="#"><i class="bi bi-cone-striped"></i> Izin Kerja K3</a>
@@ -1134,7 +1229,10 @@
 
         <div id="page-rekap" class="page">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h4><i class="bi bi-list-check"></i> Monitoring & SIMOPS</h4>
+                <div>
+                    <h4><i class="bi bi-list-check"></i> Monitoring & SIMOPS</h4>
+                    <div id="rekapUnitInfo" class="small text-muted" style="display:none;"></div>
+                </div>
                 <button class="btn btn-secondary btn-sm" onclick="nav('page-dashboard')">Kembali</button>
             </div>
             <div id="simopsContainer"></div>
@@ -1188,6 +1286,7 @@
                         <tr>
                             <th>Username</th>
                             <th>Area</th>
+                            <th>Unit</th>
                             <th>Tanggal Registrasi</th>
                             <th>Aksi</th>
                         </tr>
@@ -1356,7 +1455,7 @@
                         return;
                     }
 
-                    currUser = { name: u, role: data.role, area: data.area || '' };
+                    currUser = { name: u, role: data.role, area: data.area || '', unit: data.unit || '' };
                     document.getElementById('navUser').innerText = u;
                     document.getElementById('navRole').innerText = data.role;
 
@@ -1677,11 +1776,21 @@
         // --- REKAP & SIMOPS (Load Data) ---
         async function loadRekap() {
             document.getElementById('rekapContainer').innerHTML = '<div class="text-center p-3"><div class="spinner-border text-primary"></div><p>Sedang memuat data...</p></div>';
+
+            // Show unit info for Staff
+            const unitInfoEl = document.getElementById('rekapUnitInfo');
+            if (currUser.role === 'Staff' && currUser.unit) {
+                unitInfoEl.innerHTML = `<i class="bi bi-geo-alt"></i> Menampilkan data untuk Unit: <strong>${currUser.unit}</strong>`;
+                unitInfoEl.style.display = 'block';
+            } else {
+                unitInfoEl.style.display = 'none';
+            }
+
             try {
                 let url = `${API_BASE_URL}/api/rekap`;
-                // Auto-filter by area for Staff
-                if (currUser.role === 'Staff' && currUser.area) {
-                    url += `?area=${encodeURIComponent(currUser.area)}`;
+                // Auto-filter by unit for Staff
+                if (currUser.role === 'Staff' && currUser.unit) {
+                    url += `?unit=${encodeURIComponent(currUser.unit)}`;
                 }
                 const res = await fetch(url);
                 const jobs = await res.json();
@@ -1739,12 +1848,13 @@
                 areaJobs.forEach(job => {
                     let isConflict = conflictJobs.includes(job);
                     let borderClass = isConflict ? 'border-danger border-2' : 'border-light shadow-sm';
+                    let unitBadge = job.unit ? `<span class="badge bg-info text-white me-1"><i class="bi bi-geo"></i> ${job.unit}</span>` : '';
 
                     html += `<div class="col-md-4 mb-3"><div class="card h-100 ${borderClass}"><div class="card-body">
                   <h6 class="fw-bold">${job.jenis} - ${job.pekerjaan}</h6>
                   <div class="mb-1 text-primary fw-bold small"><i class="bi bi-building"></i> ${job.namaPT}</div>
-                  <small class="badge bg-secondary"><i class="bi bi-clock"></i> ${job.jamMulai} - ${job.jamSelesai}</small>
-                  <div class="mt-2 small border-top pt-2">
+                  <div class="mb-2">${unitBadge}<small class="badge bg-secondary"><i class="bi bi-clock"></i> ${job.jamMulai} - ${job.jamSelesai}</small></div>
+                  <div class="small border-top pt-2">
                     <span class="d-block"><strong>Dokumen:</strong> ${job.statusDoc}</span>
                     <span class="d-block"><strong>Risiko:</strong> L=${job.riskData.maxL}, C=${job.riskData.maxC}</span>
                   </div></div></div></div>`;
@@ -1758,13 +1868,31 @@
                     });
                     let combinedRR = maxL * maxC;
 
+                    // Add control buttons for Admin
+                    let controlButtons = '';
+                    if (currUser.role === 'Admin') {
+                        const conflictJobsJson = encodeURIComponent(JSON.stringify(conflictJobs));
+                        controlButtons = `
+                        <div class="mt-3 pt-3 border-top">
+                            <h6 class="fw-bold text-dark"><i class="bi bi-shield-check"></i> Pengendalian Risiko SIMOPS</h6>
+                            <div class="d-flex gap-2 flex-wrap">
+                                <button class="btn btn-warning btn-sm" onclick="showGantiJamModal('${area}', '${conflictJobsJson}')">
+                                    <i class="bi bi-clock-history"></i> Ganti Jam Kerja
+                                </button>
+                                <button class="btn btn-info btn-sm text-white" onclick="showMitigasiLainnyaModal('${area}', '${conflictJobsJson}')">
+                                    <i class="bi bi-people-fill"></i> Mitigasi Lainnya
+                                </button>
+                            </div>
+                        </div>`;
+                    }
+
                     simopsHtml += `<div class="alert alert-danger border-danger border-3 mb-3">
                <h5 class="fw-bold"><i class="bi bi-exclamation-triangle-fill"></i> SIMOPS Terdeteksi: ${area}</h5>
                <p class="mb-2">Konflik jadwal antara:</p>
                <ul class="mb-2 small">${conflictJobs.map(j => `<li><strong>${j.namaPT}</strong>: ${j.pekerjaan} (${j.jamMulai}-${j.jamSelesai})</li>`).join('')}</ul>
                <div class="d-flex align-items-center gap-2 bg-white p-2 rounded border">
                   <small class="fw-bold text-muted">RISIKO GABUNGAN:</small><span class="badge bg-light text-dark border">Max L: ${maxL}</span><span class="text-muted">x</span><span class="badge bg-light text-dark border">Max C: ${maxC}</span><span class="text-muted">=</span><span class="badge bg-danger fs-6">RR: ${combinedRR}</span>
-               </div></div>`;
+               </div>${controlButtons}</div>`;
                 }
             }
             document.getElementById('rekapContainer').innerHTML = html;
@@ -1944,7 +2072,7 @@
             tbody.innerHTML = '';
 
             if (!Array.isArray(users) || users.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Tidak ada registrasi pending</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Tidak ada registrasi pending</td></tr>';
                 return;
             }
 
@@ -1954,6 +2082,7 @@
                     <tr>
                         <td>${user.username}</td>
                         <td>${user.area || '-'}</td>
+                        <td>${user.unit || '-'}</td>
                         <td>${tanggal}</td>
                         <td>
                             <button class="btn btn-sm btn-success" onclick="approveUser('${user.username}')">
@@ -1997,6 +2126,265 @@
                 const data = await res.json();
                 alert(data.message || 'User berhasil di-reject');
                 loadPendingUsers();
+            } catch (err) {
+                alert('Error: ' + err.message);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // ==========================================
+        // FEATURE: SIMOPS RISK CONTROL FUNCTIONS
+        // ==========================================
+
+        let currentSimopsArea = '';
+        let currentConflictJobs = [];
+
+        // Show Ganti Jam Modal
+        function showGantiJamModal(area, conflictJobsJson) {
+            currentSimopsArea = area;
+            currentConflictJobs = JSON.parse(decodeURIComponent(conflictJobsJson));
+
+            document.getElementById('gantiJamArea').innerText = area;
+
+            // Build form for each conflicting job
+            let html = '<div class="table-responsive"><table class="table table-bordered">';
+            html += '<thead class="table-light"><tr><th>PT/Perusahaan</th><th>Pekerjaan</th><th>Jam Saat Ini</th><th>Jam Mulai Baru</th><th>Jam Selesai Baru</th></tr></thead>';
+            html += '<tbody>';
+
+            currentConflictJobs.forEach((job, idx) => {
+                html += `<tr>
+                    <td><strong>${job.namaPT}</strong></td>
+                    <td>${job.pekerjaan}</td>
+                    <td><span class="badge bg-danger">${job.jamMulai} - ${job.jamSelesai}</span></td>
+                    <td><input type="time" class="form-control form-control-sm jam-mulai-baru" data-job-id="${job.id}" value="${job.jamMulai}"></td>
+                    <td><input type="time" class="form-control form-control-sm jam-selesai-baru" data-job-id="${job.id}" value="${job.jamSelesai}"></td>
+                </tr>`;
+            });
+
+            html += '</tbody></table></div>';
+            html += '<div class="alert alert-warning mt-2 small"><i class="bi bi-lightbulb"></i> <strong>Tips:</strong> Ubah jam kerja agar tidak tumpang tindih antar pekerjaan di area yang sama.</div>';
+
+            document.getElementById('gantiJamContainer').innerHTML = html;
+            new bootstrap.Modal(document.getElementById('gantiJamModal')).show();
+        }
+
+        // Submit Ganti Jam
+        async function submitGantiJam() {
+            const changes = [];
+            const jamMulaiInputs = document.querySelectorAll('.jam-mulai-baru');
+            const jamSelesaiInputs = document.querySelectorAll('.jam-selesai-baru');
+
+            jamMulaiInputs.forEach((input, idx) => {
+                const jobId = input.dataset.jobId;
+                const jamMulai = input.value;
+                const jamSelesai = jamSelesaiInputs[idx].value;
+
+                changes.push({
+                    jobId: jobId,
+                    jamMulai: jamMulai,
+                    jamSelesai: jamSelesai
+                });
+            });
+
+            // Validate - check if times are still overlapping
+            let stillOverlap = false;
+            for (let i = 0; i < changes.length; i++) {
+                for (let j = i + 1; j < changes.length; j++) {
+                    if (isOverlap(changes[i].jamMulai, changes[i].jamSelesai, changes[j].jamMulai, changes[j].jamSelesai)) {
+                        stillOverlap = true;
+                        break;
+                    }
+                }
+            }
+
+            if (stillOverlap) {
+                if (!confirm('Peringatan: Jam yang diubah masih tumpang tindih! Apakah Anda yakin ingin menyimpan?')) {
+                    return;
+                }
+            }
+
+            showLoading();
+            try {
+                // First, create SIMOPS record
+                const simopsId = "SIM-" + new Date().toISOString().replace(/[-:T]/g, '').slice(0, 12);
+
+                const res = await fetch(`${API_BASE_URL}/api/simops`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        area: currentSimopsArea,
+                        konflikJobs: currentConflictJobs.map(j => j.namaPT).join(', '),
+                        apdTambahan: [],
+                        gabunganRisk: { type: 'Ganti Jam', changes: changes }
+                    })
+                });
+
+                if (res.ok) {
+                    // Update each job's time
+                    for (const change of changes) {
+                        await fetch(`${API_BASE_URL}/api/simops/mitigasi-ganti-jam`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                simopsId: simopsId,
+                                area: currentSimopsArea,
+                                changes: [change]
+                            })
+                        });
+                    }
+
+                    alert('Perubahan jam berhasil disimpan!');
+                    bootstrap.Modal.getInstance(document.getElementById('gantiJamModal')).hide();
+                    loadRekap(); // Refresh rekap
+                } else {
+                    alert('Gagal menyimpan perubahan');
+                }
+            } catch (err) {
+                alert('Error: ' + err.message);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Show Mitigasi Lainnya Modal
+        function showMitigasiLainnyaModal(area, conflictJobsJson) {
+            currentSimopsArea = area;
+            currentConflictJobs = JSON.parse(decodeURIComponent(conflictJobsJson));
+
+            document.getElementById('mitigasiArea').innerText = area;
+
+            // Reset form
+            document.getElementById('soContainer').innerHTML = `
+                <div class="input-group mb-2">
+                    <input type="text" class="form-control so-input" placeholder="Nama SO 1">
+                    <button type="button" class="btn btn-outline-success" onclick="addSOInput()">
+                        <i class="bi bi-plus"></i>
+                    </button>
+                </div>`;
+            document.getElementById('siContainer').innerHTML = `
+                <div class="input-group mb-2">
+                    <input type="text" class="form-control si-input" placeholder="Nama SI 1">
+                    <button type="button" class="btn btn-outline-success" onclick="addSIInput()">
+                        <i class="bi bi-plus"></i>
+                    </button>
+                </div>`;
+            document.getElementById('mitigasiLeader').value = '';
+            document.getElementById('mitigasiJumlahPekerja').value = '';
+
+            // Show jobs involved
+            let jobsHtml = '';
+            currentConflictJobs.forEach(job => {
+                jobsHtml += `<li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span><strong>${job.namaPT}</strong> - ${job.pekerjaan}</span>
+                    <span class="badge bg-secondary">${job.jamMulai} - ${job.jamSelesai}</span>
+                </li>`;
+            });
+            document.getElementById('mitigasiJobsList').innerHTML = jobsHtml;
+
+            new bootstrap.Modal(document.getElementById('mitigasiLainnyaModal')).show();
+        }
+
+        // Add SO Input field
+        function addSOInput() {
+            const container = document.getElementById('soContainer');
+            const count = container.querySelectorAll('.so-input').length + 1;
+            const newInput = document.createElement('div');
+            newInput.className = 'input-group mb-2';
+            newInput.innerHTML = `
+                <input type="text" class="form-control so-input" placeholder="Nama SO ${count}">
+                <button type="button" class="btn btn-outline-danger" onclick="this.parentElement.remove()">
+                    <i class="bi bi-trash"></i>
+                </button>`;
+            container.appendChild(newInput);
+        }
+
+        // Add SI Input field
+        function addSIInput() {
+            const container = document.getElementById('siContainer');
+            const count = container.querySelectorAll('.si-input').length + 1;
+            const newInput = document.createElement('div');
+            newInput.className = 'input-group mb-2';
+            newInput.innerHTML = `
+                <input type="text" class="form-control si-input" placeholder="Nama SI ${count}">
+                <button type="button" class="btn btn-outline-danger" onclick="this.parentElement.remove()">
+                    <i class="bi bi-trash"></i>
+                </button>`;
+            container.appendChild(newInput);
+        }
+
+        // Submit Mitigasi Lainnya
+        async function submitMitigasiLainnya() {
+            // Collect SO names
+            const soInputs = document.querySelectorAll('.so-input');
+            const namaSO = [];
+            soInputs.forEach(input => {
+                if (input.value.trim()) namaSO.push(input.value.trim());
+            });
+
+            // Collect SI names
+            const siInputs = document.querySelectorAll('.si-input');
+            const namaSI = [];
+            siInputs.forEach(input => {
+                if (input.value.trim()) namaSI.push(input.value.trim());
+            });
+
+            const leader = document.getElementById('mitigasiLeader').value.trim();
+            const jumlahPekerja = parseInt(document.getElementById('mitigasiJumlahPekerja').value) || 0;
+
+            // Validation
+            if (namaSO.length === 0) {
+                alert('Minimal harus ada 1 Safety Officer (SO)!');
+                return;
+            }
+            if (!leader) {
+                alert('Leader/Koordinator harus diisi!');
+                return;
+            }
+
+            showLoading();
+            try {
+                // Create SIMOPS record first
+                const simopsRes = await fetch(`${API_BASE_URL}/api/simops`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        area: currentSimopsArea,
+                        konflikJobs: currentConflictJobs.map(j => j.namaPT).join(', '),
+                        apdTambahan: [],
+                        gabunganRisk: {
+                            type: 'Mitigasi Lainnya',
+                            namaSO: namaSO,
+                            namaSI: namaSI,
+                            leader: leader,
+                            jumlahPekerja: jumlahPekerja
+                        }
+                    })
+                });
+
+                if (simopsRes.ok) {
+                    const simopsData = await simopsRes.json();
+
+                    // Save mitigasi details
+                    await fetch(`${API_BASE_URL}/api/simops/mitigasi-lainnya`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            simopsId: simopsData.id || "SIM-" + Date.now(),
+                            area: currentSimopsArea,
+                            namaSO: namaSO,
+                            namaSI: namaSI,
+                            leader: leader,
+                            jumlahPekerja: jumlahPekerja
+                        })
+                    });
+
+                    alert('Data mitigasi berhasil disimpan!');
+                    bootstrap.Modal.getInstance(document.getElementById('mitigasiLainnyaModal')).hide();
+                    loadRekap(); // Refresh rekap
+                } else {
+                    alert('Gagal menyimpan data mitigasi');
+                }
             } catch (err) {
                 alert('Error: ' + err.message);
             } finally {
