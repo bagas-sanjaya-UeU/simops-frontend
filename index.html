@@ -2034,6 +2034,21 @@
                             </div>`;
                         }
 
+                        // Tampilkan Risiko Gabungan dari dataRisiko jika ada
+                        let risikoGabunganBlock = '';
+                        if (savedSimops.dataRisiko && savedSimops.dataRisiko.maxL) {
+                            const gabunganRR = savedSimops.dataRisiko.maxL * savedSimops.dataRisiko.maxC;
+                            risikoGabunganBlock = `
+                            <div class="d-flex align-items-center gap-2 bg-white p-2 rounded border mb-2">
+                                <small class="fw-bold text-muted">RISIKO GABUNGAN:</small>
+                                <span class="badge bg-light text-dark border">Max L: ${savedSimops.dataRisiko.maxL}</span>
+                                <span class="text-muted">x</span>
+                                <span class="badge bg-light text-dark border">Max C: ${savedSimops.dataRisiko.maxC}</span>
+                                <span class="text-muted">=</span>
+                                <span class="badge bg-secondary fs-6">RR: ${savedSimops.dataRisiko.combinedRR || gabunganRR}</span>
+                            </div>`;
+                        }
+
                         simopsHtml += `
                         <div class="alert alert-success border-success border-2 mb-3 shadow-sm">
                             <div class="d-flex justify-content-between align-items-start mb-2">
@@ -2044,8 +2059,10 @@
                                 <span class="badge bg-dark font-monospace">${savedSimops.idSimops}</span>
                             </div>
                             
+                            ${risikoGabunganBlock}
+                            
                             <div class="p-2 bg-light rounded border mb-2 small">
-                                <strong>Mitigasi:</strong> ${savedSimops.keputusan || savedSimops.keputusanPengendalian}
+                                <strong>Mitigasi:</strong> ${savedSimops.keputusan || savedSimops.keputusanPengendalian || 'Belum ditentukan'}
                             </div>
                             
                             ${residualBlock}
@@ -2053,6 +2070,9 @@
 
                     } else {
                         // === KONDISI B: BELUM DISIMPAN (TAMPILAN MERAH + TOMBOL AKSI) ===
+
+                        // Generate preview SIMOPS ID untuk ditampilkan
+                        const previewSimopsId = generateSimopsId();
 
                         let controlButtons = '';
                         if (currUser.role === 'Admin') {
@@ -2073,7 +2093,10 @@
 
                         simopsHtml += `
                         <div class="alert alert-danger border-danger border-3 mb-3 shadow-sm">
-                           <h5 class="fw-bold text-danger"><i class="bi bi-exclamation-triangle-fill"></i> SIMOPS Terdeteksi: ${area}</h5>
+                           <div class="d-flex justify-content-between align-items-start mb-2">
+                               <h5 class="fw-bold text-danger mb-0"><i class="bi bi-exclamation-triangle-fill"></i> SIMOPS Terdeteksi: ${area}</h5>
+                               <span class="badge bg-danger font-monospace" title="ID akan dibuat saat mitigasi">BELUM DIMITIGASI</span>
+                           </div>
                            <p class="mb-2">Konflik jadwal antara:</p>
                            <ul class="mb-2 small bg-white rounded p-2 border">
                                 ${conflictJobs.map(j => `<li><strong>${j.namaPT}</strong>: ${j.pekerjaan} (${j.jamMulai}-${j.jamSelesai})</li>`).join('')}
@@ -2404,16 +2427,29 @@
                 // 3. Generate ID di Frontend
                 const newSimopsId = generateSimopsId();
 
-                // 4. Kirim Data ke Backend (sertakan idSimops)
+                // 4. Hitung maxL dan maxC dari conflict jobs
+                let maxL = 0, maxC = 0;
+                currentConflictJobs.forEach(j => {
+                    if (j.riskData && j.riskData.maxL > maxL) maxL = j.riskData.maxL;
+                    if (j.riskData && j.riskData.maxC > maxC) maxC = j.riskData.maxC;
+                });
+
+                // 5. Kirim Data ke Backend (sertakan idSimops dan risiko gabungan)
                 const res = await fetch(`${API_BASE_URL}/api/simops`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        idSimops: newSimopsId, // ID dikirim dari sini
+                        idSimops: newSimopsId,
                         area: currentSimopsArea,
                         konflikJobs: currentConflictJobs.map(j => j.namaPT).join(', '),
                         apdTambahan: [],
-                        gabunganRisk: { type: 'Ganti Jam', changes: changes }
+                        gabunganRisk: {
+                            type: 'Ganti Jam',
+                            changes: changes,
+                            maxL: maxL,
+                            maxC: maxC,
+                            combinedRR: maxL * maxC
+                        }
                     })
                 });
 
@@ -2537,21 +2573,31 @@
                 // 3. Generate ID di Frontend
                 const newSimopsId = generateSimopsId();
 
-                // 4. Kirim Data ke Backend (sertakan idSimops)
+                // 4. Hitung maxL dan maxC dari conflict jobs
+                let maxL = 0, maxC = 0;
+                currentConflictJobs.forEach(j => {
+                    if (j.riskData && j.riskData.maxL > maxL) maxL = j.riskData.maxL;
+                    if (j.riskData && j.riskData.maxC > maxC) maxC = j.riskData.maxC;
+                });
+
+                // 5. Kirim Data ke Backend (sertakan idSimops dan risiko gabungan)
                 const simopsRes = await fetch(`${API_BASE_URL}/api/simops`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        idSimops: newSimopsId, // ID dikirim dari sini
+                        idSimops: newSimopsId,
                         area: currentSimopsArea,
                         konflikJobs: currentConflictJobs.map(j => j.namaPT).join(', '),
                         apdTambahan: [],
                         gabunganRisk: {
-                            type: 'Mitigasi Lainnya',
+                            type: 'Mitigasi Tambahan',
                             namaSO: namaSO,
                             namaSI: namaSI,
                             leader: leader,
-                            jumlahPekerja: jumlahPekerja
+                            jumlahPekerja: jumlahPekerja,
+                            maxL: maxL,
+                            maxC: maxC,
+                            combinedRR: maxL * maxC
                         }
                     })
                 });
