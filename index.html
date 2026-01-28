@@ -2600,7 +2600,12 @@
 
             try {
                 // 1. Fetch Data Pekerjaan (Untuk deteksi konflik)
-                let urlJobs = `${API_BASE_URL}/api/rekap?today=1`;
+                // Gunakan tanggal lokal user agar tidak tergantung timezone server
+                const d = new Date();
+                const pad = (n) => String(n).padStart(2, '0');
+                const localDateStr = `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
+
+                let urlJobs = `${API_BASE_URL}/api/rekap?date=${encodeURIComponent(localDateStr)}&onlyComplete=0`;
                 if ((currUser.role === 'Staff' || currUser.role === 'Admin') && currUser.unit) {
                     urlJobs += `&unit=${encodeURIComponent(currUser.unit)}`;
                 }
