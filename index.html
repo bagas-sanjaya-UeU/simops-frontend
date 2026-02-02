@@ -1929,6 +1929,7 @@
         let allJobsCache = [];
         let loginModal;
         let simopsHistoryCache = [];
+        let simopsNotifCache = [];
 
         const units = {
             "Produksi 3A": ["Asam Sulfat", "Asam Fosfat", "ZAII", "Purifikasi", "ET"],
@@ -2625,6 +2626,16 @@
                 const simopsData = await resSimops.json();
 
                 simopsHistoryCache = simopsData.data || []; // Simpan ke cache
+                const areasInJobs = new Set(Array.isArray(jobs) ? jobs.map(j => j.area).filter(Boolean) : []);
+
+                // SIMOPS notifications: keputusan sudah ditentukan & tanggal hari ini
+                simopsNotifCache = (simopsHistoryCache || []).filter(s => {
+                    const isToday = (s.tanggal || '') === localDateStr;
+                    const decided = s.keputusan && s.keputusan !== 'Belum Ditentukan';
+                    if (!isToday || !decided) return false;
+                    if (currUser.role === 'Super Admin') return true;
+                    return areasInJobs.has(s.area);
+                });
 
                 // Filter: hanya tampilkan pekerjaan dengan Tanggal_Kerja hari ini
                 if (Array.isArray(jobs)) {
@@ -2652,10 +2663,26 @@
         }
 
         function renderRekap(jobs) {
+            let simopsHtml = '';
+            if (Array.isArray(simopsNotifCache) && simopsNotifCache.length > 0) {
+                simopsHtml += simopsNotifCache.map(s => `
+                    <div class="alert-simops alert-success mb-4">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="mb-1 fw-bold" style="color: #059669;"><i class="bi bi-check-circle-fill me-2"></i>SIMOPS Ditentukan</h6>
+                                <small class="text-muted"><i class="bi bi-geo-alt me-1"></i>Area: ${s.area || '-'} | Tanggal: ${s.tanggal || '-'}</small>
+                                <div class="mt-2"><strong style="color:#059669;">${s.keputusan}</strong></div>
+                            </div>
+                            <span class="badge font-monospace" style="background: var(--primary-dark);">${s.idSimops}</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
             // 1. Validasi Data Kosong
             if (!jobs || !Array.isArray(jobs) || jobs.length === 0) {
                 document.getElementById('rekapContainer').innerHTML = '<div class="alert alert-info">Belum ada data pekerjaan yang tercatat.</div>';
-                document.getElementById('simopsContainer').innerHTML = '';
+                document.getElementById('simopsContainer').innerHTML = simopsHtml || '';
                 return;
             }
 
@@ -2668,7 +2695,6 @@
             });
 
             let html = '';
-            let simopsHtml = '';
 
             // 3. Loop per Area untuk Cek Konflik & Render Card
             for (const [area, areaJobs] of Object.entries(areas)) {
