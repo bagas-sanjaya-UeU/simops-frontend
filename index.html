@@ -2621,10 +2621,17 @@
                     fetch(urlSimops)
                 ]);
 
-                const jobs = await resJobs.json();
+                let jobs = await resJobs.json();
                 const simopsData = await resSimops.json();
 
                 simopsHistoryCache = simopsData.data || []; // Simpan ke cache
+
+                // Filter: hanya tampilkan pekerjaan dengan Tanggal_Kerja hari ini
+                if (Array.isArray(jobs)) {
+                    jobs = jobs.filter(j => (j.tanggal || '') === localDateStr);
+                } else {
+                    jobs = [];
+                }
 
                 renderRekap(jobs);
             } catch (err) {
