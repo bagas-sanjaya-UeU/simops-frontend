@@ -2675,13 +2675,14 @@
                 let conflict = false;
                 let conflictJobs = [];
 
-                // Logika Deteksi Konflik: HANYA jika tanggal, jam mulai, dan jam selesai SAMA persis
+                // Logika Deteksi Konflik: jika rentang waktu saling overlap pada tanggal yang sama
                 for (let i = 0; i < areaJobs.length; i++) {
                     for (let j = i + 1; j < areaJobs.length; j++) {
                         const a = areaJobs[i];
                         const b = areaJobs[j];
-                        const sameSlot = (a.tanggal === b.tanggal) && (a.jamMulai === b.jamMulai) && (a.jamSelesai === b.jamSelesai);
-                        if (sameSlot) {
+                        const sameDate = (a.tanggal === b.tanggal);
+                        const overlap = sameDate && isOverlap(a.jamMulai, a.jamSelesai, b.jamMulai, b.jamSelesai);
+                        if (overlap) {
                             conflict = true;
                             if (!conflictJobs.includes(a)) conflictJobs.push(a);
                             if (!conflictJobs.includes(b)) conflictJobs.push(b);
