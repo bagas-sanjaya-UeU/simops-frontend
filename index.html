@@ -1698,9 +1698,8 @@
                     </div>
                 </ul>
                 <div class="d-flex gap-2">
-                    <button id="btnToRisk" class="btn btn-success flex-grow-1" onclick="nav('page-risk-input')">
-                        <i class="bi bi-shield-check me-1"></i>Lanjut: Penilaian Risiko <i
-                            class="bi bi-arrow-right ms-1"></i>
+                    <button id="btnToRisk" class="btn btn-success flex-grow-1" onclick="finishInputPekerjaan()">
+                        <i class="bi bi-check-circle me-1"></i>Selesai Input Pekerjaan
                     </button>
                 </div>
                 <button id="btnBackToAdmin" class="btn btn-outline-secondary w-100 mt-2" style="display:none"
@@ -2419,6 +2418,21 @@
             }
         }
 
+        async function finishInputPekerjaan() {
+            showLoading();
+            try {
+                if (currUser.role === 'Staff') {
+                    await fetchNotifications();
+                }
+                alert('Input data pekerjaan selesai.');
+                nav('page-dashboard');
+            } catch (err) {
+                alert('Error: ' + err.message);
+            } finally {
+                hideLoading();
+            }
+        }
+
         // --- RISK ASSESMENT UI ---
         function addActivityBlock() {
             const div = document.createElement('div');
@@ -3091,8 +3105,9 @@
             try {
                 const res = await fetch(`${API_BASE_URL}/api/jobs/incomplete?username=${currUser.name}`);
                 if (res.ok) {
-                    incompleteJobsData = await res.json();
-                    if (incompleteJobsData && incompleteJobsData.length > 0) {
+                    const payload = await res.json();
+                    incompleteJobsData = Array.isArray(payload.jobs) ? payload.jobs : [];
+                    if (incompleteJobsData.length > 0) {
                         showIncompleteJobModal();
                     }
                 }
@@ -3107,10 +3122,12 @@
             list.innerHTML = '';
 
             incompleteJobsData.forEach(job => {
-                const status = job.statusDoc === 'Lengkap' ? 'Belum isi risiko' : 'Belum upload dokumen';
+                const status = (job.statusDoc === 'Dokumen Tersimpan' || job.statusDoc === 'Dokumen Terupload' || job.statusDoc === 'APPROVED')
+                    ? 'Dokumen sudah lengkap'
+                    : 'Belum upload dokumen';
                 list.innerHTML += `
                     <li>
-                        <strong>${job.pekerjaan}</strong> - ${job.namaPT}<br>
+                        <strong>${job.namaPekerjaan || '-'}</strong> - ${job.namaPT || '-'}<br>
                         <small class="text-muted">Status: ${status}</small>
                     </li>
                 `;
@@ -3127,15 +3144,9 @@
                 // Hide modal
                 bootstrap.Modal.getInstance(document.getElementById('incompleteJobModal')).hide();
 
-                // Navigate based on status
-                if (job.statusDoc === 'Lengkap') {
-                    // Documents uploaded, need to fill risk assessment
-                    nav('page-risk-input');
-                } else {
-                    // Need to upload documents
-                    document.getElementById('lblJobId').innerText = currJobId;
-                    nav('page-upload');
-                }
+                // Resume to upload documents page
+                document.getElementById('lblJobId').innerText = currJobId;
+                nav('page-upload');
             }
         }
 
