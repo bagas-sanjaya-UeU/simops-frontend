@@ -1750,8 +1750,18 @@
                     <p>Pantau konflik jadwal dan kelola risiko operasi simultan</p>
                 </div>
             </div>
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <div id="rekapUnitInfo" class="small text-muted" style="display:none;"></div>
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <div id="rekapUnitInfo" class="small text-muted" style="display:none;"></div>
+                    <div id="rekapDateFilterWrap" class="d-flex align-items-center gap-2" style="display:none;">
+                        <input type="date" id="rekapDateFilter" class="form-control form-control-sm"
+                            style="max-width: 190px;">
+                        <button class="btn btn-primary btn-sm" onclick="applyRekapDateFilter()">
+                            <i class="bi bi-funnel me-1"></i>Filter Tanggal
+                        </button>
+                        <button class="btn btn-outline-primary btn-sm" onclick="setRekapFilterToday()">Hari Ini</button>
+                    </div>
+                </div>
                 <button class="btn btn-outline-secondary btn-sm" onclick="nav('page-dashboard')"><i
                         class="bi bi-arrow-left me-1"></i>Kembali</button>
             </div>
@@ -2101,9 +2111,54 @@
         function nav(page) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(page).classList.add('active');
-            if (page === 'page-rekap') loadRekap();
+            if (page === 'page-rekap') {
+                toggleRekapDateFilter();
+                loadRekap();
+            }
             if (page === 'page-list-admin') loadAdminList();
             if (page === 'page-user-approval') loadPendingUsers();
+        }
+
+        function getLocalDateDisplay() {
+            const d = new Date();
+            const pad = (n) => String(n).padStart(2, '0');
+            return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
+        }
+
+        function getLocalDateInput() {
+            const d = new Date();
+            const pad = (n) => String(n).padStart(2, '0');
+            return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+        }
+
+        function inputDateToDisplay(val) {
+            if (!val) return getLocalDateDisplay();
+            const [yyyy, mm, dd] = val.split('-');
+            if (!yyyy || !mm || !dd) return getLocalDateDisplay();
+            return `${dd}/${mm}/${yyyy}`;
+        }
+
+        function toggleRekapDateFilter() {
+            const wrap = document.getElementById('rekapDateFilterWrap');
+            const input = document.getElementById('rekapDateFilter');
+            if (!wrap || !input) return;
+
+            if (currUser.role === 'Super Admin') {
+                wrap.style.display = 'flex';
+                if (!input.value) input.value = getLocalDateInput();
+            } else {
+                wrap.style.display = 'none';
+            }
+        }
+
+        function applyRekapDateFilter() {
+            loadRekap();
+        }
+
+        function setRekapFilterToday() {
+            const input = document.getElementById('rekapDateFilter');
+            if (input) input.value = getLocalDateInput();
+            loadRekap();
         }
 
         // --- AUTHENTICATION ---
@@ -2619,11 +2674,13 @@
             try {
                 // 1. Fetch Data Pekerjaan (Untuk deteksi konflik)
                 // Gunakan tanggal lokal user agar tidak tergantung timezone server
-                const d = new Date();
-                const pad = (n) => String(n).padStart(2, '0');
-                const localDateStr = `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
+                const localDateStr = getLocalDateDisplay();
+                const selectedDateInput = document.getElementById('rekapDateFilter')?.value || '';
+                const targetDateStr = (currUser.role === 'Super Admin')
+                    ? inputDateToDisplay(selectedDateInput)
+                    : localDateStr;
 
-                let urlJobs = `${API_BASE_URL}/api/rekap?date=${encodeURIComponent(localDateStr)}&onlyComplete=0`;
+                let urlJobs = `${API_BASE_URL}/api/rekap?date=${encodeURIComponent(targetDateStr)}&onlyComplete=0`;
                 if ((currUser.role === 'Staff' || currUser.role === 'Admin' || currUser.role === 'Inspector') && currUser.unit) {
                     urlJobs += `&unit=${encodeURIComponent(currUser.unit)}`;
                 }
@@ -2644,16 +2701,16 @@
 
                 // SIMOPS notifications: keputusan sudah ditentukan & tanggal hari ini
                 simopsNotifCache = (simopsHistoryCache || []).filter(s => {
-                    const isToday = (s.tanggal || '') === localDateStr;
+                    const isToday = (s.tanggal || '') === targetDateStr;
                     const decided = s.keputusan && s.keputusan !== 'Belum Ditentukan';
                     if (!isToday || !decided) return false;
                     if (currUser.role === 'Super Admin') return true;
                     return areasInJobs.has(s.area);
                 });
 
-                // Filter: hanya tampilkan pekerjaan dengan Tanggal_Kerja hari ini
+                // Filter: hanya tampilkan pekerjaan sesuai tanggal filter
                 if (Array.isArray(jobs)) {
-                    jobs = jobs.filter(j => (j.tanggal || '') === localDateStr);
+                    jobs = jobs.filter(j => (j.tanggal || '') === targetDateStr);
                 } else {
                     jobs = [];
                 }
