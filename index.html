@@ -2386,7 +2386,14 @@
                     })
                 });
 
-                const data = await res.json();
+                const raw = await res.text();
+                let data = {};
+                try {
+                    data = raw ? JSON.parse(raw) : {};
+                } catch (parseErr) {
+                    data = { error: raw || `HTTP ${res.status}` };
+                }
+
                 if (!res.ok) {
                     throw new Error(data.error || 'Gagal mengirim persetujuan');
                 }
