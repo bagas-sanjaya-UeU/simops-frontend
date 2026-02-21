@@ -1859,7 +1859,7 @@
                     <tbody id="approvalListBody"></tbody>
                 </table>
             </div>
-            <button type="button" class="btn btn-outline-secondary mt-3" onclick="nav('page-dashboard')"><i
+                <button type="button" class="btn btn-outline-secondary mt-3" onclick="goBackFromPersetujuan()"><i
                     class="bi bi-arrow-left me-1"></i>Kembali</button>
         </div>
 
@@ -2181,6 +2181,15 @@
             loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
             persetujuanModal = new bootstrap.Modal(document.getElementById('persetujuanModal'));
             initPersetujuanSignatureCanvas();
+
+            if (isDirectPersetujuanRoute()) {
+                document.body.classList.add('logged-in');
+                document.getElementById('navUser').innerText = 'Guest';
+                document.getElementById('navRole').innerText = 'Persetujuan';
+                const logoutBtn = document.querySelector('.app-navbar .btn.btn-sm.btn-outline-light');
+                if (logoutBtn) logoutBtn.style.display = 'none';
+                nav('page-persetujuan');
+            }
         });
 
         function showLoginModal() {
@@ -2199,6 +2208,20 @@
             if (page === 'page-persetujuan') {
                 setTimeout(() => showPersetujuanModal(), 150);
             }
+        }
+
+        function isDirectPersetujuanRoute() {
+            const rawPath = window.location.pathname || '/';
+            const normalized = rawPath.replace(/\/+$/, '') || '/';
+            return normalized === '/persetujuan';
+        }
+
+        function goBackFromPersetujuan() {
+            if (isDirectPersetujuanRoute()) {
+                window.location.href = '/';
+                return;
+            }
+            nav('page-dashboard');
         }
 
         function showPersetujuanModal() {
@@ -2573,14 +2596,6 @@
                     <i class="bi bi-shield-exclamation"></i>
                     <h5 class="mt-3">Rekap & SIMOPS</h5>
                     <p class="card-desc">Monitor konflik jadwal dan kelola risiko SIMOPS</p>
-                </div>
-            </div>`;
-            html += `
-            <div class="col-md-4">
-                <div class="card menu-card p-4 text-center" onclick="nav('page-persetujuan')">
-                    <i class="bi bi-file-earmark-check"></i>
-                    <h5 class="mt-3">Persetujuan</h5>
-                    <p class="card-desc">Isi formulir persetujuan, tanda tangan digital, dan kirim PDF</p>
                 </div>
             </div>`;
             if (currUser.role === 'Admin') {
