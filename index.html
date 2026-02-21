@@ -1863,6 +1863,30 @@
                     class="bi bi-arrow-left me-1"></i>Kembali</button>
         </div>
 
+        <div id="page-persetujuan" class="page">
+            <div class="page-header mb-4">
+                <i class="bi bi-file-earmark-check"></i>
+                <div>
+                    <h4>Persetujuan</h4>
+                    <p>Isi data, tanda tangan digital, lalu submit dokumen persetujuan</p>
+                </div>
+            </div>
+            <div class="form-card">
+                <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+                    <div>
+                        <h6 class="mb-1">Dokumen Persetujuan Digital</h6>
+                        <small class="text-muted">Data yang dikirim: nama, badge, unit, status persetujuan, dan PDF tanda tangan.</small>
+                    </div>
+                    <button class="btn btn-primary" onclick="showPersetujuanModal()">
+                        <i class="bi bi-pencil-square me-1"></i>Isi Persetujuan
+                    </button>
+                </div>
+                <div id="persetujuanStatus" class="mt-3"></div>
+            </div>
+            <button type="button" class="btn btn-outline-secondary mt-3" onclick="nav('page-dashboard')"><i
+                    class="bi bi-arrow-left me-1"></i>Kembali</button>
+        </div>
+
         <div class="modal fade" id="detailModal" tabindex="-1">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
@@ -1875,6 +1899,55 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="persetujuanModal" tabindex="-1" data-bs-backdrop="static">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title"><i class="bi bi-file-earmark-check me-2"></i>Form Persetujuan</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Nama</label>
+                                <input type="text" id="persetujuanNama" class="form-control" placeholder="Nama lengkap">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Badge</label>
+                                <input type="text" id="persetujuanBadge" class="form-control" placeholder="Nomor badge">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Unit</label>
+                            <input type="text" id="persetujuanUnit" class="form-control" placeholder="Unit kerja">
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="persetujuanSetuju">
+                            <label class="form-check-label" for="persetujuanSetuju">
+                                Saya menyetujui isi dokumen persetujuan
+                            </label>
+                        </div>
+                        <label class="form-label fw-bold">Tanda Tangan Digital</label>
+                        <div class="border rounded p-2 bg-light">
+                            <canvas id="persetujuanSignatureCanvas" width="900" height="280"
+                                style="width: 100%; height: 220px; background: #fff; border: 1px dashed #6c757d; touch-action: none;"></canvas>
+                        </div>
+                        <div class="mt-2">
+                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="clearPersetujuanSignature()">
+                                <i class="bi bi-eraser me-1"></i>Hapus Tanda Tangan
+                            </button>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="button" class="btn btn-primary" onclick="submitPersetujuan()">
+                            <i class="bi bi-send-check me-1"></i>Submit Persetujuan
+                        </button>
                     </div>
                 </div>
             </div>
@@ -1926,6 +1999,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
     <script>
         // ==========================================================
         // KONFIGURASI BACKEND (GANTI DENGAN URL RENDER ANDA)
@@ -1939,6 +2013,9 @@
         let loginModal;
         let simopsHistoryCache = [];
         let simopsNotifCache = [];
+        let persetujuanModal;
+        let persetujuanIsDrawing = false;
+        let persetujuanHasSignature = false;
 
         const units = {
             "Produksi 3A": ["Asam Sulfat", "Asam Fosfat", "ZAII", "Purifikasi", "ET"],
@@ -2102,6 +2179,8 @@
         // Initialize modal on page load
         document.addEventListener('DOMContentLoaded', function () {
             loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+            persetujuanModal = new bootstrap.Modal(document.getElementById('persetujuanModal'));
+            initPersetujuanSignatureCanvas();
         });
 
         function showLoginModal() {
@@ -2117,6 +2196,195 @@
             }
             if (page === 'page-list-admin') loadAdminList();
             if (page === 'page-user-approval') loadPendingUsers();
+            if (page === 'page-persetujuan') {
+                setTimeout(() => showPersetujuanModal(), 150);
+            }
+        }
+
+        function showPersetujuanModal() {
+            if (!persetujuanModal) {
+                persetujuanModal = new bootstrap.Modal(document.getElementById('persetujuanModal'));
+            }
+            persetujuanModal.show();
+        }
+
+        function initPersetujuanSignatureCanvas() {
+            const canvas = document.getElementById('persetujuanSignatureCanvas');
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.strokeStyle = '#111827';
+
+            clearPersetujuanSignature();
+
+            const getPos = (event) => {
+                const rect = canvas.getBoundingClientRect();
+                return {
+                    x: (event.clientX - rect.left) * (canvas.width / rect.width),
+                    y: (event.clientY - rect.top) * (canvas.height / rect.height)
+                };
+            };
+
+            canvas.addEventListener('pointerdown', (event) => {
+                event.preventDefault();
+                const pos = getPos(event);
+                persetujuanIsDrawing = true;
+                canvas.setPointerCapture(event.pointerId);
+                ctx.beginPath();
+                ctx.moveTo(pos.x, pos.y);
+            });
+
+            canvas.addEventListener('pointermove', (event) => {
+                if (!persetujuanIsDrawing) return;
+                event.preventDefault();
+                const pos = getPos(event);
+                ctx.lineTo(pos.x, pos.y);
+                ctx.stroke();
+                persetujuanHasSignature = true;
+            });
+
+            const stopDraw = (event) => {
+                if (!persetujuanIsDrawing) return;
+                event.preventDefault();
+                persetujuanIsDrawing = false;
+                ctx.closePath();
+            };
+
+            canvas.addEventListener('pointerup', stopDraw);
+            canvas.addEventListener('pointerleave', stopDraw);
+            canvas.addEventListener('pointercancel', stopDraw);
+        }
+
+        function clearPersetujuanSignature() {
+            const canvas = document.getElementById('persetujuanSignatureCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            persetujuanHasSignature = false;
+        }
+
+        function generatePersetujuanPdf({ namaMenyetujui, badge, unit, statusPersetujuan }) {
+            if (!window.jspdf || !window.jspdf.jsPDF) {
+                throw new Error('Library PDF belum siap. Coba ulang beberapa detik lagi.');
+            }
+
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+            const signatureCanvas = document.getElementById('persetujuanSignatureCanvas');
+            const signatureDataUrl = signatureCanvas.toDataURL('image/png');
+            const tanggalCetak = new Date().toLocaleDateString('id-ID', {
+                day: '2-digit',
+                month: 'long',
+                year: 'numeric'
+            });
+
+            pdf.setFont('helvetica', 'bold');
+            pdf.setFontSize(16);
+            pdf.text('SURAT PERSETUJUAN PEKERJAAN', 105, 20, { align: 'center' });
+
+            pdf.setFont('helvetica', 'normal');
+            pdf.setFontSize(11);
+            pdf.text(`Tanggal: ${tanggalCetak}`, 20, 32);
+
+            const isiPersetujuan = [
+                'Saya yang bertanda tangan di bawah ini menyatakan telah membaca, memahami, dan menyetujui pelaksanaan pekerjaan sesuai prosedur keselamatan kerja yang berlaku di area operasional.',
+                'Saya bersedia mematuhi semua ketentuan K3 dan menerima konsekuensi apabila terjadi pelanggaran terhadap ketentuan tersebut.'
+            ];
+
+            let y = 45;
+            isiPersetujuan.forEach((paragraf) => {
+                const wrapped = pdf.splitTextToSize(paragraf, 170);
+                pdf.text(wrapped, 20, y);
+                y += wrapped.length * 6 + 2;
+            });
+
+            y += 8;
+            pdf.text(`Nama              : ${namaMenyetujui}`, 20, y);
+            pdf.text(`Badge             : ${badge}`, 20, y + 8);
+            pdf.text(`Unit              : ${unit}`, 20, y + 16);
+            pdf.text(`Status Persetujuan: ${statusPersetujuan}`, 20, y + 24);
+
+            const signBlockTop = y + 38;
+            pdf.text('Tanda Tangan:', 20, signBlockTop);
+            pdf.rect(20, signBlockTop + 3, 90, 40);
+            pdf.addImage(signatureDataUrl, 'PNG', 23, signBlockTop + 6, 84, 34);
+
+            pdf.text(`${namaMenyetujui}`, 20, signBlockTop + 50);
+            pdf.text(`Badge: ${badge}`, 20, signBlockTop + 56);
+
+            return pdf.output('datauristring');
+        }
+
+        async function submitPersetujuan() {
+            const namaMenyetujui = document.getElementById('persetujuanNama').value.trim();
+            const badge = document.getElementById('persetujuanBadge').value.trim();
+            const unit = document.getElementById('persetujuanUnit').value.trim();
+            const isSetuju = document.getElementById('persetujuanSetuju').checked;
+
+            if (!namaMenyetujui || !badge || !unit) {
+                alert('Nama, badge, dan unit wajib diisi.');
+                return;
+            }
+            if (!isSetuju) {
+                alert('Centang persetujuan terlebih dahulu.');
+                return;
+            }
+            if (!persetujuanHasSignature) {
+                alert('Tanda tangan belum diisi.');
+                return;
+            }
+
+            const statusPersetujuan = 'Menyetujui';
+            const namaFile = `Persetujuan_${namaMenyetujui.replace(/\s+/g, '_')}_${Date.now()}.pdf`;
+
+            showLoading();
+            try {
+                const pdfData = generatePersetujuanPdf({
+                    namaMenyetujui,
+                    badge,
+                    unit,
+                    statusPersetujuan
+                });
+
+                const res = await fetch(`${API_BASE_URL}/api/persetujuan`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        namaMenyetujui,
+                        badge,
+                        unit,
+                        statusPersetujuan,
+                        namaFile,
+                        fileData: pdfData
+                    })
+                });
+
+                const data = await res.json();
+                if (!res.ok) {
+                    throw new Error(data.error || 'Gagal mengirim persetujuan');
+                }
+
+                document.getElementById('persetujuanStatus').innerHTML = `
+                    <div class="alert alert-success mb-0">
+                        Persetujuan berhasil dikirim.${data.fileUrl ? ` <a href="${data.fileUrl}" target="_blank" class="alert-link">Lihat PDF</a>` : ''}
+                    </div>`;
+
+                alert('Persetujuan berhasil dikirim.');
+                if (persetujuanModal) persetujuanModal.hide();
+                document.getElementById('persetujuanNama').value = '';
+                document.getElementById('persetujuanBadge').value = '';
+                document.getElementById('persetujuanUnit').value = '';
+                document.getElementById('persetujuanSetuju').checked = false;
+                clearPersetujuanSignature();
+            } catch (err) {
+                alert('Gagal submit persetujuan: ' + err.message);
+            } finally {
+                hideLoading();
+            }
         }
 
         function getLocalDateDisplay() {
@@ -2305,6 +2573,14 @@
                     <i class="bi bi-shield-exclamation"></i>
                     <h5 class="mt-3">Rekap & SIMOPS</h5>
                     <p class="card-desc">Monitor konflik jadwal dan kelola risiko SIMOPS</p>
+                </div>
+            </div>`;
+            html += `
+            <div class="col-md-4">
+                <div class="card menu-card p-4 text-center" onclick="nav('page-persetujuan')">
+                    <i class="bi bi-file-earmark-check"></i>
+                    <h5 class="mt-3">Persetujuan</h5>
+                    <p class="card-desc">Isi formulir persetujuan, tanda tangan digital, dan kirim PDF</p>
                 </div>
             </div>`;
             if (currUser.role === 'Admin') {
