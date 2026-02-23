@@ -1996,6 +1996,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <script src="./persetujuan-pdf-template.js"></script>
     <script>
         // ==========================================================
         // KONFIGURASI BACKEND (GANTI DENGAN URL RENDER ANDA)
@@ -2286,82 +2287,6 @@
             persetujuanHasSignature = false;
         }
 
-        function generatePersetujuanPdf({ namaMenyetujui, noHp, statusPersetujuan }) {
-            if (!window.jspdf || !window.jspdf.jsPDF) {
-                throw new Error('Library PDF belum siap. Coba ulang beberapa detik lagi.');
-            }
-
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-            const signatureCanvas = document.getElementById('persetujuanSignatureCanvas');
-            const signatureDataUrl = signatureCanvas.toDataURL('image/png');
-            const tanggalCetak = new Date().toLocaleDateString('id-ID', {
-                day: '2-digit',
-                month: 'long',
-                year: 'numeric'
-            });
-
-            const tahun = new Date().getFullYear();
-
-            pdf.setFont('helvetica', 'bold');
-            pdf.setFontSize(13);
-            pdf.text('LEMBAR PERSETUJUAN MENJADI RESPONDEN', 105, 18, { align: 'center' });
-
-            pdf.setFont('helvetica', 'italic');
-            pdf.setFontSize(10);
-            pdf.text('(Informed Consent)', 105, 24, { align: 'center' });
-
-            pdf.setFont('helvetica', 'normal');
-            pdf.setFontSize(10);
-
-            const isiPersetujuan = [
-                'Saya telah membaca atau memperoleh penjelasan terkait penelitian ini, sepenuhnya menyadari, memahami, dan mengerti tentang tujuan serta manfaat penelitian yang akan dilakukan.',
-                'Saya tidak akan membocorkan informasi kepada siapapun yang diperoleh pada saat menerima penjelasan materi yang diberikan pada saat pelaksanaan program oleh peneliti.',
-                'Dengan ini saya menyatakan:'
-            ];
-
-            let y = 36;
-            isiPersetujuan.forEach((paragraf) => {
-                const wrapped = pdf.splitTextToSize(paragraf, 170);
-                pdf.text(wrapped, 20, y);
-                y += wrapped.length * 5 + 2;
-            });
-
-            y += 2;
-            pdf.text(`Nama              : ${namaMenyetujui}`, 20, y);
-            pdf.text(`No. HP / WhatsApp : ${noHp}`, 20, y + 8);
-
-            const statusDisplay = statusPersetujuan === 'Bersedia' ? 'BERSEDIA' : 'TIDAK BERSEDIA';
-            pdf.setFont('helvetica', 'bold');
-            pdf.text(`${statusDisplay} ikut dalam penelitian ini.`, 20, y + 18);
-            pdf.setFont('helvetica', 'normal');
-
-            const penutup = [
-                'Demikian pernyataan ini dibuat dengan penuh kesadaran dan tanpa paksaan dari pihak lain.',
-                `Gresik, ${tanggalCetak}`
-            ];
-
-            let yp = y + 28;
-            penutup.forEach((paragraf) => {
-                const wrapped = pdf.splitTextToSize(paragraf, 170);
-                pdf.text(wrapped, 20, yp);
-                yp += wrapped.length * 5 + 2;
-            });
-
-            const signBlockTop = yp + 8;
-            pdf.text('Peneliti', 45, signBlockTop);
-            pdf.text('Responden', 135, signBlockTop, { align: 'center' });
-
-            pdf.rect(95, signBlockTop + 5, 80, 35);
-            pdf.addImage(signatureDataUrl, 'PNG', 98, signBlockTop + 8, 74, 29);
-
-            pdf.text('(Renata Dewi Puspitasari)', 45, signBlockTop + 52, { align: 'center' });
-            pdf.text(`(${namaMenyetujui})`, 135, signBlockTop + 52, { align: 'center' });
-            pdf.text(`${tahun}`, 182, signBlockTop - 16);
-
-            return pdf.output('datauristring');
-        }
-
         async function submitPersetujuan() {
             const namaMenyetujui = document.getElementById('persetujuanNama').value.trim();
             const noHp = document.getElementById('persetujuanBadge').value.trim();
@@ -2382,10 +2307,18 @@
 
             showLoading();
             try {
-                const pdfData = generatePersetujuanPdf({
+                const signatureCanvas = document.getElementById('persetujuanSignatureCanvas');
+                const signatureDataUrl = signatureCanvas.toDataURL('image/png');
+
+                if (typeof window.generatePersetujuanPdfTemplate !== 'function') {
+                    throw new Error('Template PDF belum termuat. Silakan refresh halaman.');
+                }
+
+                const pdfData = window.generatePersetujuanPdfTemplate({
                     namaMenyetujui,
                     noHp,
-                    statusPersetujuan
+                    statusPersetujuan,
+                    signatureDataUrl
                 });
 
                 const res = await fetch(`${API_BASE_URL}/api/persetujuan`, {
