@@ -1918,18 +1918,14 @@
                                 <input type="text" id="persetujuanNama" class="form-control" placeholder="Nama lengkap">
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">Badge</label>
-                                <input type="text" id="persetujuanBadge" class="form-control" placeholder="Nomor badge">
+                                <label class="form-label fw-bold">No HP / WhatsApp</label>
+                                <input type="text" id="persetujuanBadge" class="form-control" placeholder="Contoh: 081234567890">
                             </div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Unit</label>
-                            <input type="text" id="persetujuanUnit" class="form-control" placeholder="Unit kerja">
                         </div>
                         <div class="form-check mb-3">
                             <input class="form-check-input" type="checkbox" id="persetujuanSetuju">
                             <label class="form-check-label" for="persetujuanSetuju">
-                                Saya menyetujui isi dokumen persetujuan
+                                Saya BERSEDIA menjadi responden
                             </label>
                         </div>
                         <label class="form-label fw-bold">Tanda Tangan Digital</label>
@@ -2290,7 +2286,7 @@
             persetujuanHasSignature = false;
         }
 
-        function generatePersetujuanPdf({ namaMenyetujui, badge, unit, statusPersetujuan }) {
+        function generatePersetujuanPdf({ namaMenyetujui, noHp, statusPersetujuan }) {
             if (!window.jspdf || !window.jspdf.jsPDF) {
                 throw new Error('Library PDF belum siap. Coba ulang beberapa detik lagi.');
             }
@@ -2305,55 +2301,74 @@
                 year: 'numeric'
             });
 
+            const tahun = new Date().getFullYear();
+
             pdf.setFont('helvetica', 'bold');
-            pdf.setFontSize(16);
-            pdf.text('SURAT PERSETUJUAN PEKERJAAN', 105, 20, { align: 'center' });
+            pdf.setFontSize(13);
+            pdf.text('LEMBAR PERSETUJUAN MENJADI RESPONDEN', 105, 18, { align: 'center' });
+
+            pdf.setFont('helvetica', 'italic');
+            pdf.setFontSize(10);
+            pdf.text('(Informed Consent)', 105, 24, { align: 'center' });
 
             pdf.setFont('helvetica', 'normal');
-            pdf.setFontSize(11);
-            pdf.text(`Tanggal: ${tanggalCetak}`, 20, 32);
+            pdf.setFontSize(10);
 
             const isiPersetujuan = [
-                'Saya yang bertanda tangan di bawah ini menyatakan telah membaca, memahami, dan menyetujui pelaksanaan pekerjaan sesuai prosedur keselamatan kerja yang berlaku di area operasional.',
-                'Saya bersedia mematuhi semua ketentuan K3 dan menerima konsekuensi apabila terjadi pelanggaran terhadap ketentuan tersebut.'
+                'Saya telah membaca atau memperoleh penjelasan terkait penelitian ini, sepenuhnya menyadari, memahami, dan mengerti tentang tujuan serta manfaat penelitian yang akan dilakukan.',
+                'Saya tidak akan membocorkan informasi kepada siapapun yang diperoleh pada saat menerima penjelasan materi yang diberikan pada saat pelaksanaan program oleh peneliti.',
+                'Dengan ini saya menyatakan:'
             ];
 
-            let y = 45;
+            let y = 36;
             isiPersetujuan.forEach((paragraf) => {
                 const wrapped = pdf.splitTextToSize(paragraf, 170);
                 pdf.text(wrapped, 20, y);
-                y += wrapped.length * 6 + 2;
+                y += wrapped.length * 5 + 2;
             });
 
-            y += 8;
+            y += 2;
             pdf.text(`Nama              : ${namaMenyetujui}`, 20, y);
-            pdf.text(`Badge             : ${badge}`, 20, y + 8);
-            pdf.text(`Unit              : ${unit}`, 20, y + 16);
-            pdf.text(`Status Persetujuan: ${statusPersetujuan}`, 20, y + 24);
+            pdf.text(`No. HP / WhatsApp : ${noHp}`, 20, y + 8);
 
-            const signBlockTop = y + 38;
-            pdf.text('Tanda Tangan:', 20, signBlockTop);
-            pdf.rect(20, signBlockTop + 3, 90, 40);
-            pdf.addImage(signatureDataUrl, 'PNG', 23, signBlockTop + 6, 84, 34);
+            const statusDisplay = statusPersetujuan === 'Bersedia' ? 'BERSEDIA' : 'TIDAK BERSEDIA';
+            pdf.setFont('helvetica', 'bold');
+            pdf.text(`${statusDisplay} ikut dalam penelitian ini.`, 20, y + 18);
+            pdf.setFont('helvetica', 'normal');
 
-            pdf.text(`${namaMenyetujui}`, 20, signBlockTop + 50);
-            pdf.text(`Badge: ${badge}`, 20, signBlockTop + 56);
+            const penutup = [
+                'Demikian pernyataan ini dibuat dengan penuh kesadaran dan tanpa paksaan dari pihak lain.',
+                `Gresik, ${tanggalCetak}`
+            ];
+
+            let yp = y + 28;
+            penutup.forEach((paragraf) => {
+                const wrapped = pdf.splitTextToSize(paragraf, 170);
+                pdf.text(wrapped, 20, yp);
+                yp += wrapped.length * 5 + 2;
+            });
+
+            const signBlockTop = yp + 8;
+            pdf.text('Peneliti', 45, signBlockTop);
+            pdf.text('Responden', 135, signBlockTop, { align: 'center' });
+
+            pdf.rect(95, signBlockTop + 5, 80, 35);
+            pdf.addImage(signatureDataUrl, 'PNG', 98, signBlockTop + 8, 74, 29);
+
+            pdf.text('(Renata Dewi Puspitasari)', 45, signBlockTop + 52, { align: 'center' });
+            pdf.text(`(${namaMenyetujui})`, 135, signBlockTop + 52, { align: 'center' });
+            pdf.text(`${tahun}`, 182, signBlockTop - 16);
 
             return pdf.output('datauristring');
         }
 
         async function submitPersetujuan() {
             const namaMenyetujui = document.getElementById('persetujuanNama').value.trim();
-            const badge = document.getElementById('persetujuanBadge').value.trim();
-            const unit = document.getElementById('persetujuanUnit').value.trim();
+            const noHp = document.getElementById('persetujuanBadge').value.trim();
             const isSetuju = document.getElementById('persetujuanSetuju').checked;
 
-            if (!namaMenyetujui || !badge || !unit) {
-                alert('Nama, badge, dan unit wajib diisi.');
-                return;
-            }
-            if (!isSetuju) {
-                alert('Centang persetujuan terlebih dahulu.');
+            if (!namaMenyetujui || !noHp) {
+                alert('Nama dan No HP / WhatsApp wajib diisi.');
                 return;
             }
             if (!persetujuanHasSignature) {
@@ -2361,15 +2376,15 @@
                 return;
             }
 
-            const statusPersetujuan = 'Menyetujui';
+            const statusPersetujuan = isSetuju ? 'Bersedia' : 'Tidak Bersedia';
+            const unit = '-';
             const namaFile = `Persetujuan_${namaMenyetujui.replace(/\s+/g, '_')}_${Date.now()}.pdf`;
 
             showLoading();
             try {
                 const pdfData = generatePersetujuanPdf({
                     namaMenyetujui,
-                    badge,
-                    unit,
+                    noHp,
                     statusPersetujuan
                 });
 
@@ -2378,7 +2393,7 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         namaMenyetujui,
-                        badge,
+                        badge: noHp,
                         unit,
                         statusPersetujuan,
                         namaFile,
@@ -2407,7 +2422,6 @@
                 if (persetujuanModal) persetujuanModal.hide();
                 document.getElementById('persetujuanNama').value = '';
                 document.getElementById('persetujuanBadge').value = '';
-                document.getElementById('persetujuanUnit').value = '';
                 document.getElementById('persetujuanSetuju').checked = false;
                 clearPersetujuanSignature();
             } catch (err) {
