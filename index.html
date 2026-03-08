@@ -215,6 +215,43 @@
             line-height: 1.6;
         }
 
+        /* SIMOPS Material Section */
+        .simops-material-section {
+            padding: 50px 0;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        }
+
+        .simops-material-card {
+            background: white;
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+            padding: 28px;
+        }
+
+        .simops-material-title {
+            color: var(--primary-dark);
+            font-weight: 700;
+            margin-bottom: 18px;
+        }
+
+        .simops-material-card h6 {
+            color: var(--primary-blue);
+            font-weight: 700;
+            margin-top: 14px;
+        }
+
+        .simops-material-card p,
+        .simops-material-card li {
+            color: #334155;
+            line-height: 1.7;
+        }
+
+        .simops-material-card ul,
+        .simops-material-card ol {
+            margin-bottom: 12px;
+        }
+
         /* Quote Section */
         .quote-section {
             padding: 40px 0;
@@ -1203,7 +1240,7 @@
                         </p>
                         <div class="d-flex flex-wrap gap-2">
                             <button class="btn btn-mulai" onclick="showLoginModal()">Masuk Sistem</button>
-                            <button class="btn btn-konsultasi">Pelajari SIMOPS</button>
+                            <a class="btn btn-konsultasi" href="#materi-simops">Pelajari SIMOPS</a>
                         </div>
                     </div>
                     <div class="col-lg-6 text-center hero-image mt-4 mt-lg-0">
@@ -1253,6 +1290,69 @@
                                 satu dashboard</p>
                         </div>
                     </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="simops-material-section" id="materi-simops">
+            <div class="container-fluid px-4">
+                <div class="simops-material-card animate-on-scroll">
+                    <h4 class="simops-material-title"><i class="bi bi-journal-text me-2"></i>Materi SIMOPS</h4>
+
+                    <h6>A. Pengertian SIMOPS</h6>
+                    <p>
+                        Simultaneous Operations (SIMOPS) adalah kondisi ketika dua atau lebih aktivitas pekerjaan
+                        dilakukan secara bersamaan di area yang sama atau berdekatan.
+                    </p>
+
+                    <h6>B. Contoh Pekerjaan SIMOPS</h6>
+                    <ol>
+                        <li>Pengelasan yang dilakukan di area dekat dengan line aktif yang berisi material mudah
+                            terbakar.</li>
+                        <li>Lifting pompa besar di atas area kerja pemasangan pipa.</li>
+                        <li>Crane lifting peralatan saat forklift lalu-lalang di lokasi kerja.</li>
+                    </ol>
+
+                    <h6>C. Hal-hal yang perlu diperhatikan</h6>
+                    <ol>
+                        <li>Perhatikan aktivitas lain di sekitar area kerja.</li>
+                        <li>Ikuti instruksi kerja dan izin kerja (Permit to Work).</li>
+                        <li>Gunakan APD yang sesuai.</li>
+                        <li>Lakukan komunikasi dengan tim lain sebelum bekerja.</li>
+                        <li>Laporkan jika ada pekerjaan lain yang berpotensi mengganggu keselamatan.</li>
+                    </ol>
+
+                    <h6>D. Pengelolaan SIMOPS</h6>
+                    <ol>
+                        <li>
+                            Identifikasi Pekerjaan
+                            <ul>
+                                <li>Ketahui pekerjaan apa saja yang dilakukan di area yang sama.</li>
+                                <li>Perhatikan potensi bahaya dari aktivitas lain di sekitar pekerjaan.</li>
+                            </ul>
+                        </li>
+                        <li>
+                            Koordinasi Pra Pekerjaan
+                            <ul>
+                                <li>Pastikan izin kerja (Safety Permit) sudah tersedia.</li>
+                                <li>Pahami risiko pekerjaan yang dilakukan bersamaan.</li>
+                            </ul>
+                        </li>
+                        <li>
+                            Monitoring
+                            <ul>
+                                <li>Ikuti safety briefing sebelum mulai kerja.</li>
+                                <li>Pastikan komunikasi antar pekerja tetap berjalan.</li>
+                                <li>Supervisor dan petugas safety melakukan pengawasan di area kerja.</li>
+                            </ul>
+                        </li>
+                        <li>
+                            Evaluasi
+                            <ul>
+                                <li>Laporkan jika ada kondisi tidak aman atau kejadian hampir celaka (near miss).</li>
+                            </ul>
+                        </li>
+                    </ol>
                 </div>
             </div>
         </section>
