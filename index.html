@@ -215,41 +215,462 @@
             line-height: 1.6;
         }
 
-        /* SIMOPS Material Section */
+        /* ===== SIMOPS Material Section - Infographic Style ===== */
         .simops-material-section {
-            padding: 50px 0;
-            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            padding: 60px 0;
+            background: linear-gradient(135deg, #f0f4f8 0%, #e6f0fa 50%, #f0f4f8 100%);
         }
 
-        .simops-material-card {
+        /* Main Header Banner */
+        .materi-header-banner {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, #1a4a7a 100%);
+            border-radius: 18px 18px 0 0;
+            padding: 28px 35px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .materi-header-banner::before {
+            content: '';
+            position: absolute;
+            right: -20px;
+            top: -20px;
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .materi-header-banner h2 {
+            color: white;
+            font-weight: 800;
+            font-size: 2rem;
+            margin: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .materi-header-banner h2::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 4px;
+            background: var(--accent-orange);
+            border-radius: 2px;
+            margin-top: 8px;
+        }
+
+        /* Materi Main Container */
+        .materi-main-container {
+            background: white;
+            border-radius: 0 0 18px 18px;
+            box-shadow: 0 8px 40px rgba(15, 23, 42, 0.1);
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .materi-body {
+            padding: 30px;
+        }
+
+        /* Section Cards */
+        .materi-section-label {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--accent-orange), #f97316);
+            color: white;
+            font-weight: 700;
+            font-size: 0.95rem;
+            padding: 6px 18px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+        }
+
+        .materi-section-label.blue {
+            background: linear-gradient(135deg, var(--primary-blue), #3b82f6);
+        }
+
+        .materi-section-label.green {
+            background: linear-gradient(135deg, #059669, #10b981);
+        }
+
+        .materi-section-label.teal {
+            background: linear-gradient(135deg, #0d9488, #14b8a6);
+        }
+
+        /* Pengertian Card */
+        .pengertian-card {
+            background: linear-gradient(135deg, #f8fafc, #eef4fb);
+            border-radius: 14px;
+            border-left: 5px solid var(--accent-orange);
+            padding: 22px 28px;
+            margin-bottom: 24px;
+        }
+
+        .pengertian-card p {
+            color: #334155;
+            font-size: 0.95rem;
+            line-height: 1.8;
+            margin: 0;
+        }
+
+        .pengertian-card strong {
+            color: var(--primary-dark);
+        }
+
+        /* Contoh Pekerjaan */
+        .contoh-card {
             background: white;
             border-radius: 14px;
             border: 1px solid #e2e8f0;
-            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
-            padding: 28px;
+            padding: 22px;
+            margin-bottom: 24px;
         }
 
-        .simops-material-title {
+        .contoh-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            margin-bottom: 14px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            background: #f8fafc;
+            transition: all 0.3s ease;
+        }
+
+        .contoh-item:hover {
+            background: #eef4fb;
+            transform: translateX(4px);
+        }
+
+        .contoh-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .contoh-number {
+            flex-shrink: 0;
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary-blue));
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+        }
+
+        .contoh-text {
+            color: #334155;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            padding-top: 5px;
+        }
+
+        /* Hal yang perlu diperhatikan - Green Card */
+        .perhatikan-card {
+            background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+            border-radius: 14px;
+            border: 1px solid #a7f3d0;
+            padding: 22px 28px;
+            margin-bottom: 24px;
+        }
+
+        .perhatikan-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .perhatikan-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 10px;
+            color: #064e3b;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .perhatikan-list li i {
+            color: #059669;
+            font-size: 1rem;
+            margin-top: 3px;
+            flex-shrink: 0;
+        }
+
+        /* 5-Step Process Cards */
+        .steps-container {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 991px) {
+            .steps-container {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 576px) {
+            .steps-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .step-card {
+            background: white;
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+            padding: 20px 16px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .step-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 30px rgba(30, 58, 95, 0.15);
+            border-color: var(--primary-blue);
+        }
+
+        .step-number-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--accent-orange), #f97316);
+            color: white;
+            font-weight: 700;
+            font-size: 0.85rem;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+
+        .step-icon {
+            font-size: 2.2rem;
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .step-card h6 {
             color: var(--primary-dark);
             font-weight: 700;
-            margin-bottom: 18px;
+            font-size: 0.85rem;
+            margin-bottom: 10px;
         }
 
-        .simops-material-card h6 {
-            color: var(--primary-blue);
+        .step-card p {
+            color: #64748b;
+            font-size: 0.78rem;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        /* Do's & Don'ts Section */
+        .dos-donts-section {
+            margin-bottom: 24px;
+        }
+
+        .dos-donts-header {
+            background: linear-gradient(135deg, #1e293b, #334155);
+            color: white;
+            padding: 14px 24px;
+            border-radius: 12px 12px 0 0;
             font-weight: 700;
-            margin-top: 14px;
+            font-size: 1.05rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .simops-material-card p,
-        .simops-material-card li {
+        .dos-donts-body {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            border: 1px solid #e2e8f0;
+            border-top: none;
+            border-radius: 0 0 12px 12px;
+            overflow: hidden;
+        }
+
+        @media (max-width: 768px) {
+            .dos-donts-body {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .dos-column {
+            padding: 22px;
+            background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+            border-right: 1px solid #e2e8f0;
+        }
+
+        .donts-column {
+            padding: 22px;
+            background: linear-gradient(135deg, #fef2f2, #fff5f5);
+        }
+
+        .dos-column h6,
+        .donts-column h6 {
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dos-column h6 {
+            color: #059669;
+        }
+
+        .donts-column h6 {
+            color: #dc2626;
+        }
+
+        .dos-column ul,
+        .donts-column ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .dos-column li,
+        .donts-column li {
+            position: relative;
+            padding: 8px 0 8px 24px;
+            font-size: 0.85rem;
+            line-height: 1.6;
             color: #334155;
-            line-height: 1.7;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
         }
 
-        .simops-material-card ul,
-        .simops-material-card ol {
-            margin-bottom: 12px;
+        .dos-column li:last-child,
+        .donts-column li:last-child {
+            border-bottom: none;
+        }
+
+        .dos-column li::before {
+            content: '\2713';
+            position: absolute;
+            left: 0;
+            color: #059669;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .donts-column li::before {
+            content: '\2717';
+            position: absolute;
+            left: 0;
+            color: #dc2626;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        /* Langkah Koordinasi Flow */
+        .koordinasi-section {
+            margin-bottom: 10px;
+        }
+
+        .koordinasi-header {
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--primary-dark);
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .koordinasi-flow {
+            display: flex;
+            align-items: stretch;
+            gap: 0;
+            justify-content: center;
+        }
+
+        @media (max-width: 768px) {
+            .koordinasi-flow {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        .koordinasi-step {
+            flex: 1;
+            max-width: 280px;
+            background: linear-gradient(145deg, #ffffff, #f8fafc);
+            border: 2px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 22px 18px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .koordinasi-step:hover {
+            border-color: var(--primary-blue);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(30, 58, 95, 0.12);
+        }
+
+        .koordinasi-step .k-step-num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary-blue));
+            color: white;
+            font-weight: 700;
+            font-size: 0.85rem;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            margin-bottom: 8px;
+        }
+
+        .koordinasi-step h6 {
+            color: var(--primary-dark);
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+
+        .koordinasi-step p {
+            color: #64748b;
+            font-size: 0.82rem;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .koordinasi-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 8px;
+            color: var(--accent-orange);
+            font-size: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .koordinasi-arrow {
+                transform: rotate(90deg);
+                padding: 8px 0;
+            }
+        }
+
+        .koordinasi-step .k-icon {
+            font-size: 2rem;
+            color: var(--primary-blue);
+            display: block;
+            margin-bottom: 8px;
         }
 
         /* Quote Section */
@@ -1296,63 +1717,159 @@
 
         <section class="simops-material-section" id="materi-simops">
             <div class="container-fluid px-4">
-                <div class="simops-material-card animate-on-scroll">
-                    <h4 class="simops-material-title"><i class="bi bi-journal-text me-2"></i>Materi SIMOPS</h4>
+                <!-- Header Banner -->
+                <div class="materi-header-banner animate-on-scroll">
+                    <h2><i class="bi bi-journal-bookmark-fill me-2"></i>Materi SIMOPS</h2>
+                </div>
 
-                    <h6>A. Pengertian SIMOPS</h6>
-                    <p>
-                        Simultaneous Operations (SIMOPS) adalah kondisi ketika dua atau lebih aktivitas pekerjaan
-                        dilakukan secara bersamaan di area yang sama atau berdekatan.
-                    </p>
+                <div class="materi-main-container">
+                    <div class="materi-body">
 
-                    <h6>B. Contoh Pekerjaan SIMOPS</h6>
-                    <ol>
-                        <li>Pengelasan yang dilakukan di area dekat dengan line aktif yang berisi material mudah
-                            terbakar.</li>
-                        <li>Lifting pompa besar di atas area kerja pemasangan pipa.</li>
-                        <li>Crane lifting peralatan saat forklift lalu-lalang di lokasi kerja.</li>
-                    </ol>
+                        <!-- Row 1: Pengertian + Contoh Pekerjaan -->
+                        <div class="row g-4 mb-4">
+                            <!-- A. Pengertian SIMOPS -->
+                            <div class="col-lg-6">
+                                <span class="materi-section-label">A. Pengertian SIMOPS</span>
+                                <div class="pengertian-card">
+                                    <p>
+                                        <strong>Simultaneous Operations (SIMOPS)</strong> adalah kondisi ketika <strong>dua atau lebih aktivitas pekerjaan</strong> dilakukan <strong>secara bersamaan</strong> di area yang sama atau berdekatan.
+                                    </p>
+                                </div>
 
-                    <h6>C. Hal-hal yang perlu diperhatikan</h6>
-                    <ol>
-                        <li>Perhatikan aktivitas lain di sekitar area kerja.</li>
-                        <li>Ikuti instruksi kerja dan izin kerja (Permit to Work).</li>
-                        <li>Gunakan APD yang sesuai.</li>
-                        <li>Lakukan komunikasi dengan tim lain sebelum bekerja.</li>
-                        <li>Laporkan jika ada pekerjaan lain yang berpotensi mengganggu keselamatan.</li>
-                    </ol>
+                                <!-- B. Contoh Pekerjaan SIMOPS -->
+                                <span class="materi-section-label blue">B. Contoh Pekerjaan SIMOPS</span>
+                                <div class="contoh-card">
+                                    <div class="contoh-item">
+                                        <div class="contoh-number">1</div>
+                                        <div class="contoh-text">Pengelasan yang dilakukan di area dekat dengan line aktif yang berisi material mudah terbakar.</div>
+                                    </div>
+                                    <div class="contoh-item">
+                                        <div class="contoh-number">2</div>
+                                        <div class="contoh-text">Lifting pompa besar di atas area kerja pemasangan pipa.</div>
+                                    </div>
+                                    <div class="contoh-item">
+                                        <div class="contoh-number">3</div>
+                                        <div class="contoh-text">Crane lifting peralatan saat forklift lalu-lalang di lokasi kerja.</div>
+                                    </div>
+                                </div>
+                            </div>
 
-                    <h6>D. Pengelolaan SIMOPS</h6>
-                    <ol>
-                        <li>
-                            Identifikasi Pekerjaan
-                            <ul>
-                                <li>Ketahui pekerjaan apa saja yang dilakukan di area yang sama.</li>
-                                <li>Perhatikan potensi bahaya dari aktivitas lain di sekitar pekerjaan.</li>
-                            </ul>
-                        </li>
-                        <li>
-                            Koordinasi Pra Pekerjaan
-                            <ul>
-                                <li>Pastikan izin kerja (Safety Permit) sudah tersedia.</li>
-                                <li>Pahami risiko pekerjaan yang dilakukan bersamaan.</li>
-                            </ul>
-                        </li>
-                        <li>
-                            Monitoring
-                            <ul>
-                                <li>Ikuti safety briefing sebelum mulai kerja.</li>
-                                <li>Pastikan komunikasi antar pekerja tetap berjalan.</li>
-                                <li>Supervisor dan petugas safety melakukan pengawasan di area kerja.</li>
-                            </ul>
-                        </li>
-                        <li>
-                            Evaluasi
-                            <ul>
-                                <li>Laporkan jika ada kondisi tidak aman atau kejadian hampir celaka (near miss).</li>
-                            </ul>
-                        </li>
-                    </ol>
+                            <!-- C. Hal-hal yang perlu diperhatikan -->
+                            <div class="col-lg-6">
+                                <span class="materi-section-label green">C. Hal-hal yang perlu diperhatikan</span>
+                                <div class="perhatikan-card">
+                                    <ul class="perhatikan-list">
+                                        <li><i class="bi bi-check-circle-fill"></i> Perhatikan aktivitas lain di sekitar area kerja.</li>
+                                        <li><i class="bi bi-check-circle-fill"></i> Ikuti instruksi kerja dan izin kerja (Permit to Work).</li>
+                                        <li><i class="bi bi-check-circle-fill"></i> Gunakan APD yang sesuai.</li>
+                                        <li><i class="bi bi-check-circle-fill"></i> Lakukan komunikasi dengan tim lain sebelum bekerja.</li>
+                                        <li><i class="bi bi-check-circle-fill"></i> Laporkan jika ada pekerjaan lain yang berpotensi mengganggu keselamatan.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- D. Pengelolaan SIMOPS - 5 Steps -->
+                        <span class="materi-section-label teal">D. Pengelolaan SIMOPS</span>
+                        <div class="steps-container">
+                            <!-- Step 1 -->
+                            <div class="step-card">
+                                <div class="step-number-badge">1</div>
+                                <i class="bi bi-search step-icon"></i>
+                                <h6>Identifikasi Pekerjaan</h6>
+                                <p>Ketahui pekerjaan di area pembesar. Perhatikan potensi bahaya...</p>
+                            </div>
+                            <!-- Step 2 -->
+                            <div class="step-card">
+                                <div class="step-number-badge">2</div>
+                                <i class="bi bi-people-fill step-icon"></i>
+                                <h6>Koordinasi Pra Pekerjaan</h6>
+                                <p>Adakan rapat pekerjaan. Diskusikan prosedur dengan rapat.</p>
+                            </div>
+                            <!-- Step 3 -->
+                            <div class="step-card">
+                                <div class="step-number-badge">3</div>
+                                <i class="bi bi-chat-dots-fill step-icon"></i>
+                                <h6>Komunikasi Berkelanjutan</h6>
+                                <p>Gunakan radio pemantauan. Pastikan komunikasi di walkie-talkie.</p>
+                            </div>
+                            <!-- Step 4 -->
+                            <div class="step-card">
+                                <div class="step-number-badge">4</div>
+                                <i class="bi bi-clipboard-check step-icon"></i>
+                                <h6>Pelaporan dan Pengawasan</h6>
+                                <p>Gunakan checklist tablet dan Orang. Awasi pekerjaan...</p>
+                            </div>
+                            <!-- Step 5 -->
+                            <div class="step-card">
+                                <div class="step-number-badge">5</div>
+                                <i class="bi bi-graph-up-arrow step-icon"></i>
+                                <h6>Evaluasi dan Perbaikan</h6>
+                                <p>Tinjau hasil grafik naik. Buat perbaikan penggunaan...</p>
+                            </div>
+                        </div>
+
+                        <!-- Do's and Don'ts -->
+                        <div class="dos-donts-section">
+                            <div class="dos-donts-header">
+                                <i class="bi bi-shield-exclamation"></i>
+                                HAL YANG HARUS DILAKUKAN & DILARANG (DO'S AND DON'TS)
+                            </div>
+                            <div class="dos-donts-body">
+                                <div class="dos-column">
+                                    <h6><i class="bi bi-check-square-fill"></i> HAL YANG HARUS DILAKUKAN (DO'S)</h6>
+                                    <ul>
+                                        <li><strong>Memeriksa lingkungan sekitar:</strong> Selalu perhatikan kondisi area kerja di atas, bawah, sisi kiri, dan kanan sebelum memulai aktivitas.</li>
+                                        <li><strong>Melakukan konfirmasi keamanan:</strong> Pastikan kepada pengawas area kerja asa aman dari dampak pekerjaan tim lain.</li>
+                                        <li><strong>Saling mengingatkan:</strong> Tegur dan ingatkan rekan kerja tim lain secara kooperatif apabila aktivitas mereka berpotensi membahayakan Anda.</li>
+                                        <li><strong>Mematuhi rambu dan barikade:</strong> Selalu perhatikan rambu peringatan dan batas area kerja yang telah ditentukan.</li>
+                                    </ul>
+                                </div>
+                                <div class="donts-column">
+                                    <h6><i class="bi bi-x-square-fill"></i> HAL YANG TIDAK BOLEH DILAKUKAN (DON'TS)</h6>
+                                    <ul>
+                                        <li><strong>Melintasi batas area kerja:</strong> Dilarang keras memasuki area kerja tim lain tanpa izin, terutama area berbarikade.</li>
+                                        <li><strong>Mengabaikan potensi bahaya:</strong> Dilarang membiarkan atau mendiamkan kondisi tidak aman, seperti adanya percikan api atau alat kerja rawan jatuh.</li>
+                                        <li><strong>Memaksakan pekerjaan:</strong> Dilarang melanjutkan pekerjaan apabila situasi di sekitar mulai terasa membahayakan.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Langkah Koordinasi Dasar di Lapangan -->
+                        <div class="koordinasi-section">
+                            <div class="koordinasi-header">
+                                <i class="bi bi-diagram-3 me-2"></i>Langkah Koordinasi Dasar di Lapangan
+                            </div>
+                            <div class="koordinasi-flow">
+                                <div class="koordinasi-step">
+                                    <span class="k-step-num">1</span>
+                                    <i class="bi bi-person-lines-fill k-icon"></i>
+                                    <h6>Identifikasi Pekerjaan</h6>
+                                    <p>Kenali pekerja/tim lain di area yang sama.</p>
+                                </div>
+                                <div class="koordinasi-arrow">
+                                    <i class="bi bi-arrow-right-circle-fill"></i>
+                                </div>
+                                <div class="koordinasi-step">
+                                    <span class="k-step-num">2</span>
+                                    <i class="bi bi-megaphone-fill k-icon"></i>
+                                    <h6>Komunikasi Awal</h6>
+                                    <p>Sampaikan rencana aktivitas Anda agar mereka waspada.</p>
+                                </div>
+                                <div class="koordinasi-arrow">
+                                    <i class="bi bi-arrow-right-circle-fill"></i>
+                                </div>
+                                <div class="koordinasi-step">
+                                    <span class="k-step-num">3</span>
+                                    <i class="bi bi-exclamation-triangle-fill k-icon"></i>
+                                    <h6>Pelaporan Cepat</h6>
+                                    <p>Segera laporkan tumpang tindih pekerjaan tak terkoordinasi.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
             </div>
         </section>
